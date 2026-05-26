@@ -17,12 +17,12 @@ var topicPaths = {
   // good
   methods:                'good/Methods.java',
   strings:                'good/Strings.java',
-  arrays:                 'good/Arrays.java',
+  arrays:                 'good/ArraysDemo.java',
   // pro
   oop_classes:            'pro/OopClasses.java',
   oop_inheritance:        'pro/OopInheritance.java',
   exceptions:             'pro/Exceptions.java',
-  collections:            'pro/Collections.java',
+  collections:            'pro/CollectionsFramework.java',
   // geek
   generics:               'geek/Generics.java',
   lambdas_and_functional: 'geek/LambdasAndFunctional.java',

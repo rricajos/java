@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-public class Collections {
+public class CollectionsFramework {
     public static void main(String[] args) {
 
         ////////////////////////////////////////////////////////////////
