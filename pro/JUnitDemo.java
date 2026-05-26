@@ -1,29 +1,204 @@
 ////////////////////////////////////////////////////////////////
-// JUNIT 5 — Testing en Java
+// JUNIT 5 — Testing en Java (mini-framework ejecutable)
 ////////////////////////////////////////////////////////////////
 
-// JUnit 5 requiere las dependencias en el classpath:
-//   org.junit.jupiter:junit-jupiter-api
-//   org.junit.jupiter:junit-jupiter-engine
+// En un proyecto real, JUnit 5 se añade como dependencia:
+//   Maven:  junit-jupiter:5.10+
+//   Gradle: testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 //
-// Con Maven:
-//   <dependency>
-//     <groupId>org.junit.jupiter</groupId>
-//     <artifactId>junit-jupiter</artifactId>
-//     <version>5.10.0</version>
-//     <scope>test</scope>
-//   </dependency>
-//
-// Con Gradle:
-//   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-//
-// Este fichero es una GUÍA de referencia. Para ejecutar los tests
-// se necesita un runner de JUnit (Maven/Gradle/IDE).
+// Este fichero SIMULA JUnit 5 con un mini-framework propio
+// para que puedas ejecutarlo directamente: javac JUnitDemo.java && java JUnitDemo
 
-// import org.junit.jupiter.api.*;
-// import static org.junit.jupiter.api.Assertions.*;
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 public class JUnitDemo {
+
+    ////////////////////////////////////////////////////////////////
+    // 1. ANNOTATIONS — simulan las de JUnit 5
+    ////////////////////////////////////////////////////////////////
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    @interface Test {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    @interface DisplayName { String value(); }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    @interface BeforeEach {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    @interface AfterEach {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    @interface Disabled { String value() default ""; }
+
+    ////////////////////////////////////////////////////////////////
+    // 2. ASSERTIONS — simulan org.junit.jupiter.api.Assertions
+    ////////////////////////////////////////////////////////////////
+
+    static int assertionCount = 0;
+
+    static void assertEquals(Object expected, Object actual) {
+        assertionCount++;
+        if (!Objects.equals(expected, actual))
+            throw new AssertionError("assertEquals falló: esperado <" + expected + "> pero fue <" + actual + ">");
+    }
+
+    static void assertEquals(Object expected, Object actual, String msg) {
+        assertionCount++;
+        if (!Objects.equals(expected, actual))
+            throw new AssertionError(msg + " — esperado <" + expected + "> pero fue <" + actual + ">");
+    }
+
+    static void assertEquals(double expected, double actual, double delta) {
+        assertionCount++;
+        if (Math.abs(expected - actual) > delta)
+            throw new AssertionError("assertEquals falló: esperado <" + expected + " ±" + delta + "> pero fue <" + actual + ">");
+    }
+
+    static void assertNotEquals(Object unexpected, Object actual) {
+        assertionCount++;
+        if (Objects.equals(unexpected, actual))
+            throw new AssertionError("assertNotEquals falló: no esperaba <" + unexpected + ">");
+    }
+
+    static void assertTrue(boolean condition) {
+        assertionCount++;
+        if (!condition) throw new AssertionError("assertTrue falló: condición fue false");
+    }
+
+    static void assertTrue(boolean condition, String msg) {
+        assertionCount++;
+        if (!condition) throw new AssertionError("assertTrue falló: " + msg);
+    }
+
+    static void assertFalse(boolean condition) {
+        assertionCount++;
+        if (condition) throw new AssertionError("assertFalse falló: condición fue true");
+    }
+
+    static void assertNull(Object obj) {
+        assertionCount++;
+        if (obj != null) throw new AssertionError("assertNull falló: objeto no es null");
+    }
+
+    static void assertNotNull(Object obj) {
+        assertionCount++;
+        if (obj == null) throw new AssertionError("assertNotNull falló: objeto es null");
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable> T assertThrows(Class<T> expected, Runnable code) {
+        assertionCount++;
+        try {
+            code.run();
+            throw new AssertionError("assertThrows falló: se esperaba " + expected.getSimpleName() + " pero no se lanzó nada");
+        } catch (Throwable t) {
+            if (expected.isInstance(t)) return (T) t;
+            throw new AssertionError("assertThrows falló: se esperaba " + expected.getSimpleName() + " pero se lanzó " + t.getClass().getSimpleName());
+        }
+    }
+
+    // assertAll ejecuta TODAS las assertions y reporta todas las que fallan
+    static void assertAll(String heading, Runnable... assertions) {
+        List<String> failures = new ArrayList<>();
+        for (Runnable r : assertions) {
+            try { r.run(); }
+            catch (AssertionError e) { failures.add(e.getMessage()); }
+        }
+        if (!failures.isEmpty()) {
+            throw new AssertionError("assertAll '" + heading + "' — " + failures.size()
+                + " fallo(s):\n    " + String.join("\n    ", failures));
+        }
+    }
+
+    // assertTimeout verifica que el código termina dentro del tiempo límite
+    static void assertTimeout(long millis, Runnable code) {
+        assertionCount++;
+        long start = System.currentTimeMillis();
+        code.run();
+        long elapsed = System.currentTimeMillis() - start;
+        if (elapsed > millis)
+            throw new AssertionError("assertTimeout falló: límite " + millis + "ms pero tardó " + elapsed + "ms");
+    }
+
+    // Error personalizado para assertions (no usar java.lang.AssertionError)
+    static class AssertionError extends RuntimeException {
+        AssertionError(String msg) { super(msg); }
+    }
+
+    ////////////////////////////////////////////////////////////////
+    // 3. TEST RUNNER — simula el runner de JUnit 5 con reflection
+    ////////////////////////////////////////////////////////////////
+
+    static int totalTests = 0, passed = 0, failed = 0, disabled = 0;
+
+    static void runTests(Class<?>... testClasses) {
+        System.out.println("=== Mini JUnit Runner ===\n");
+
+        for (Class<?> clazz : testClasses) {
+            System.out.println("▶ " + clazz.getSimpleName());
+
+            // Buscar métodos @BeforeEach y @AfterEach
+            Method beforeEach = null, afterEach = null;
+            for (Method m : clazz.getDeclaredMethods()) {
+                if (m.isAnnotationPresent(BeforeEach.class)) beforeEach = m;
+                if (m.isAnnotationPresent(AfterEach.class)) afterEach = m;
+            }
+
+            // Ejecutar cada método @Test
+            for (Method m : clazz.getDeclaredMethods()) {
+                if (!m.isAnnotationPresent(Test.class)) continue;
+                totalTests++;
+
+                // Nombre del test
+                String name = m.isAnnotationPresent(DisplayName.class)
+                    ? m.getAnnotation(DisplayName.class).value()
+                    : m.getName();
+
+                // ¿Está desactivado?
+                if (m.isAnnotationPresent(Disabled.class)) {
+                    String reason = m.getAnnotation(Disabled.class).value();
+                    System.out.println("  ○ SKIP: " + name + (reason.isEmpty() ? "" : " (" + reason + ")"));
+                    disabled++;
+                    continue;
+                }
+
+                try {
+                    Object instance = clazz.getDeclaredConstructor().newInstance();
+                    m.setAccessible(true);
+                    if (beforeEach != null) { beforeEach.setAccessible(true); beforeEach.invoke(instance); }
+                    m.invoke(instance);
+                    if (afterEach != null) { afterEach.setAccessible(true); afterEach.invoke(instance); }
+                    System.out.println("  ✓ PASS: " + name);
+                    passed++;
+                } catch (InvocationTargetException e) {
+                    Throwable cause = e.getCause();
+                    System.out.println("  ✗ FAIL: " + name + " → " + cause.getMessage());
+                    failed++;
+                } catch (Exception e) {
+                    System.out.println("  ✗ ERROR: " + name + " → " + e.getMessage());
+                    failed++;
+                }
+            }
+            System.out.println();
+        }
+
+        // Resumen
+        System.out.println("════════════════════════════════════");
+        System.out.printf("Tests: %d | Pasados: %d | Fallidos: %d | Desactivados: %d%n",
+            totalTests, passed, failed, disabled);
+        System.out.println("Assertions ejecutadas: " + assertionCount);
+        System.out.println("════════════════════════════════════");
+        System.out.println(failed == 0 ? "RESULTADO: TODO OK" : "RESULTADO: HAY FALLOS");
+    }
 
     ////////////////////////////////////////////////////////////////
     // CLASE A TESTEAR
@@ -41,186 +216,148 @@ public class JUnitDemo {
     }
 
     ////////////////////////////////////////////////////////////////
-    // ESTRUCTURA DE UN TEST
+    // 4. TESTS: ASSERTIONS BÁSICAS
     ////////////////////////////////////////////////////////////////
 
-    // @Test                    → marca un método como test
-    // @DisplayName("...")      → nombre descriptivo
-    // @Disabled("razón")       → desactivar test temporalmente
-    //
-    // @BeforeEach              → se ejecuta ANTES de cada test
-    // @AfterEach               → se ejecuta DESPUÉS de cada test
-    // @BeforeAll               → se ejecuta UNA vez antes de todos (static)
-    // @AfterAll                → se ejecuta UNA vez después de todos (static)
+    // Simula: @BeforeEach, @AfterEach, @Test, @DisplayName
+    static class CalculatorBasicTest {
+        Calculator calc;
 
-    // Ejemplo de test class:
-    //
-    // class CalculatorTest {
-    //     Calculator calc;
-    //
-    //     @BeforeEach
-    //     void setUp() {
-    //         calc = new Calculator();
-    //     }
-    //
-    //     @Test
-    //     @DisplayName("Suma de dos números positivos")
-    //     void testAdd() {
-    //         assertEquals(5, calc.add(2, 3));
-    //     }
-    //
-    //     @Test
-    //     void testSubtract() {
-    //         assertEquals(1, calc.subtract(3, 2));
-    //     }
-    //
-    //     @AfterEach
-    //     void tearDown() {
-    //         calc = null;
-    //     }
-    // }
+        @BeforeEach
+        void setUp() { calc = new Calculator(); }
 
-    ////////////////////////////////////////////////////////////////
-    // ASSERTIONS — verificar resultados
-    ////////////////////////////////////////////////////////////////
+        @AfterEach
+        void tearDown() { calc = null; }
 
-    // assertEquals(expected, actual)         → igualdad
-    // assertEquals(expected, actual, delta)  → doubles con tolerancia
-    // assertNotEquals(unexpected, actual)    → desigualdad
-    // assertTrue(condition)                  → condición true
-    // assertFalse(condition)                 → condición false
-    // assertNull(obj)                        → es null
-    // assertNotNull(obj)                     → no es null
-    // assertSame(expected, actual)           → misma referencia
-    // assertArrayEquals(expected, actual)    → arrays iguales
+        @Test
+        @DisplayName("Suma de dos positivos")
+        void testAdd() {
+            assertEquals(5, calc.add(2, 3));
+            assertEquals(0, calc.add(-1, 1));
+        }
 
-    // Ejemplo:
-    // @Test
-    // void testAssertions() {
-    //     Calculator calc = new Calculator();
-    //
-    //     assertEquals(4, calc.add(2, 2), "2 + 2 debería ser 4");
-    //     assertNotEquals(5, calc.add(2, 2));
-    //     assertTrue(calc.isEven(4));
-    //     assertFalse(calc.isEven(3));
-    //
-    //     double result = calc.divide(10, 3);
-    //     assertEquals(3.33, result, 0.01); // delta de tolerancia
-    // }
+        @Test
+        @DisplayName("Resta básica")
+        void testSubtract() {
+            assertEquals(1, calc.subtract(3, 2));
+        }
+
+        @Test
+        @DisplayName("Multiplicación")
+        void testMultiply() {
+            assertEquals(12, calc.multiply(3, 4));
+            assertEquals(0, calc.multiply(5, 0));
+        }
+
+        @Test
+        @DisplayName("Verificar par/impar")
+        void testIsEven() {
+            assertTrue(calc.isEven(4));
+            assertFalse(calc.isEven(3));
+            assertTrue(calc.isEven(0), "Cero es par");
+        }
+
+        @Disabled("Ejemplo de test desactivado")
+        @Test
+        void testSkipped() {
+            // Este test no se ejecuta
+            assertEquals(1, 2);
+        }
+    }
 
     ////////////////////////////////////////////////////////////////
-    // ASSERTTHROWS — verificar excepciones
+    // 5. TESTS: ASSERTTHROWS — verificar excepciones
     ////////////////////////////////////////////////////////////////
 
-    // @Test
-    // void testDivideByZero() {
-    //     Calculator calc = new Calculator();
-    //
-    //     ArithmeticException ex = assertThrows(
-    //         ArithmeticException.class,
-    //         () -> calc.divide(10, 0)
-    //     );
-    //     assertEquals("División por cero", ex.getMessage());
-    // }
-    //
-    // // Verificar que NO lanza excepción
-    // @Test
-    // void testDivideNormal() {
-    //     assertDoesNotThrow(() -> new Calculator().divide(10, 2));
-    // }
+    static class CalculatorExceptionTest {
+
+        @Test
+        @DisplayName("División por cero lanza ArithmeticException")
+        void testDivideByZero() {
+            Calculator calc = new Calculator();
+            ArithmeticException ex = assertThrows(
+                ArithmeticException.class,
+                () -> calc.divide(10, 0)
+            );
+            assertEquals("División por cero", ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("División normal no lanza excepción")
+        void testDivideNormal() {
+            // assertDoesNotThrow simulado: si no lanza, pasa
+            new Calculator().divide(10, 2);
+            assertTrue(true); // llegamos aquí = no hubo excepción
+        }
+    }
 
     ////////////////////////////////////////////////////////////////
-    // ASSERTALL — múltiples assertions agrupadas
+    // 6. TESTS: ASSERTALL — múltiples assertions agrupadas
     ////////////////////////////////////////////////////////////////
 
-    // @Test
-    // void testMultipleAssertions() {
-    //     Calculator calc = new Calculator();
-    //
-    //     // Ejecuta TODAS las assertions (no se detiene en la primera falla)
-    //     assertAll("Operaciones básicas",
-    //         () -> assertEquals(5, calc.add(2, 3)),
-    //         () -> assertEquals(1, calc.subtract(3, 2)),
-    //         () -> assertEquals(6, calc.multiply(2, 3)),
-    //         () -> assertEquals(2.5, calc.divide(5, 2))
-    //     );
-    // }
+    static class CalculatorGroupedTest {
+
+        @Test
+        @DisplayName("Todas las operaciones en un solo assertAll")
+        void testAllOperations() {
+            Calculator calc = new Calculator();
+            // assertAll ejecuta TODAS y reporta todas las que fallan
+            assertAll("Operaciones básicas",
+                () -> assertEquals(5, calc.add(2, 3)),
+                () -> assertEquals(1, calc.subtract(3, 2)),
+                () -> assertEquals(6, calc.multiply(2, 3)),
+                () -> assertEquals(2.5, calc.divide(5, 2))
+            );
+        }
+    }
 
     ////////////////////////////////////////////////////////////////
-    // PARAMETERIZED TESTS — mismo test con distintos datos
+    // 7. TESTS: PARAMETERIZED — mismo test con distintos datos
     ////////////////////////////////////////////////////////////////
 
-    // @ParameterizedTest
-    // @ValueSource(ints = {2, 4, 6, 8, 100})
-    // void testIsEven(int number) {
-    //     assertTrue(new Calculator().isEven(number));
-    // }
-    //
-    // @ParameterizedTest
-    // @CsvSource({
-    //     "1, 1, 2",
-    //     "2, 3, 5",
-    //     "10, 20, 30",
-    //     "-1, 1, 0"
-    // })
-    // void testAddParameterized(int a, int b, int expected) {
-    //     assertEquals(expected, new Calculator().add(a, b));
-    // }
-    //
-    // @ParameterizedTest
-    // @MethodSource("addProvider")
-    // void testAddWithMethodSource(int a, int b, int expected) {
-    //     assertEquals(expected, new Calculator().add(a, b));
-    // }
-    //
-    // static Stream<Arguments> addProvider() {
-    //     return Stream.of(
-    //         Arguments.of(1, 1, 2),
-    //         Arguments.of(0, 0, 0),
-    //         Arguments.of(-1, -1, -2)
-    //     );
-    // }
+    // En JUnit 5 real se usa @ParameterizedTest + @ValueSource/@CsvSource.
+    // Aquí lo simulamos con bucles (misma idea).
+
+    static class CalculatorParameterizedTest {
+
+        @Test
+        @DisplayName("isEven con múltiples valores (simula @ValueSource)")
+        void testIsEvenParameterized() {
+            int[] evenNumbers = {2, 4, 6, 8, 100, 0, -2};
+            Calculator calc = new Calculator();
+            for (int n : evenNumbers) {
+                assertTrue(calc.isEven(n), n + " debería ser par");
+            }
+        }
+
+        @Test
+        @DisplayName("Suma parametrizada (simula @CsvSource)")
+        void testAddParameterized() {
+            // Cada fila: {a, b, resultado_esperado}
+            int[][] data = { {1,1,2}, {2,3,5}, {10,20,30}, {-1,1,0}, {0,0,0} };
+            Calculator calc = new Calculator();
+            for (int[] row : data) {
+                assertEquals(row[2], calc.add(row[0], row[1]),
+                    row[0] + " + " + row[1] + " debería ser " + row[2]);
+            }
+        }
+    }
 
     ////////////////////////////////////////////////////////////////
-    // NESTED TESTS — organizar tests en grupos
+    // 8. TESTS: TIMEOUT — limitar tiempo de ejecución
     ////////////////////////////////////////////////////////////////
 
-    // @Nested
-    // @DisplayName("Tests de suma")
-    // class AddTests {
-    //     @Test
-    //     void positiveNumbers() {
-    //         assertEquals(5, new Calculator().add(2, 3));
-    //     }
-    //
-    //     @Test
-    //     void negativeNumbers() {
-    //         assertEquals(-5, new Calculator().add(-2, -3));
-    //     }
-    //
-    //     @Test
-    //     void zero() {
-    //         assertEquals(0, new Calculator().add(0, 0));
-    //     }
-    // }
+    static class CalculatorTimeoutTest {
 
-    ////////////////////////////////////////////////////////////////
-    // TIMEOUT — limitar tiempo de ejecución
-    ////////////////////////////////////////////////////////////////
-
-    // @Test
-    // @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)
-    // void testPerformance() {
-    //     // Si tarda más de 500ms, falla
-    //     new Calculator().add(1, 1);
-    // }
-    //
-    // @Test
-    // void testWithAssertTimeout() {
-    //     assertTimeout(Duration.ofMillis(100), () -> {
-    //         new Calculator().add(1, 1);
-    //     });
-    // }
+        @Test
+        @DisplayName("La suma no tarda más de 100ms")
+        void testPerformance() {
+            assertTimeout(100, () -> {
+                Calculator calc = new Calculator();
+                for (int i = 0; i < 1_000_000; i++) calc.add(i, i);
+            });
+        }
+    }
 
     ////////////////////////////////////////////////////////////////
     // CONVENCIONES Y BUENAS PRÁCTICAS
@@ -239,60 +376,22 @@ public class JUnitDemo {
     //   Act     → ejecutar operación
     //   Assert  → verificar resultado
 
-    // @Test
-    // void testAdd_positiveNumbers_returnsSum() {
-    //     // Arrange
-    //     Calculator calc = new Calculator();
-    //     int a = 2, b = 3;
-    //
-    //     // Act
-    //     int result = calc.add(a, b);
-    //
-    //     // Assert
-    //     assertEquals(5, result);
-    // }
+    // Ejecución:
+    //   Maven:  mvn test
+    //   Gradle: gradle test
+    //   IDE:    Click derecho → Run Tests
 
     ////////////////////////////////////////////////////////////////
-    // EJECUTAR TESTS
-    ////////////////////////////////////////////////////////////////
-
-    // Maven:  mvn test
-    // Gradle: gradle test
-    // IDE:    Click derecho → Run Tests
-
-    ////////////////////////////////////////////////////////////////
-    // MAIN (demostración sin JUnit)
+    // MAIN — ejecutar todos los tests con el mini-runner
     ////////////////////////////////////////////////////////////////
 
     public static void main(String[] args) {
-        Calculator calc = new Calculator();
-
-        // Simulación manual de tests
-        System.out.println("=== Tests manuales (sin JUnit) ===\n");
-
-        assert calc.add(2, 3) == 5 : "add falló";
-        System.out.println("OK: add(2, 3) = " + calc.add(2, 3));
-
-        assert calc.subtract(5, 3) == 2 : "subtract falló";
-        System.out.println("OK: subtract(5, 3) = " + calc.subtract(5, 3));
-
-        assert calc.multiply(3, 4) == 12 : "multiply falló";
-        System.out.println("OK: multiply(3, 4) = " + calc.multiply(3, 4));
-
-        assert calc.divide(10, 3) > 3.33 : "divide falló";
-        System.out.println("OK: divide(10, 3) = " + calc.divide(10, 3));
-
-        assert calc.isEven(4) : "isEven falló";
-        System.out.println("OK: isEven(4) = true");
-
-        try {
-            calc.divide(1, 0);
-            System.out.println("FAIL: debería haber lanzado excepción");
-        } catch (ArithmeticException e) {
-            System.out.println("OK: divide(1, 0) lanza ArithmeticException");
-        }
-
-        System.out.println("\nTodos los tests pasaron");
-        System.out.println("\nPara tests reales usar JUnit 5 con Maven/Gradle");
+        runTests(
+            CalculatorBasicTest.class,
+            CalculatorExceptionTest.class,
+            CalculatorGroupedTest.class,
+            CalculatorParameterizedTest.class,
+            CalculatorTimeoutTest.class
+        );
     }
 }

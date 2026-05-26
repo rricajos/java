@@ -32,6 +32,7 @@ var topicPaths = {
   jdbc:                   'pro/JDBC.java',
   junit:                  'pro/JUnitDemo.java',
   design_patterns:        'pro/DesignPatterns.java',
+  build_tools:            'pro/BuildToolsDemo.java',
   // geek
   generics:               'geek/Generics.java',
   lambdas_and_functional: 'geek/LambdasAndFunctional.java',

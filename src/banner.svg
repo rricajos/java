@@ -41,7 +41,7 @@
   <text x="240" y="115" font-family="monospace" font-size="20" fill="#5382a1">Pure Java Handbook</text>
 
   <!-- Stats -->
-  <text x="240" y="150" font-family="monospace" font-size="14" fill="#888">30 topics · 4 levels · basics → geek</text>
+  <text x="240" y="150" font-family="monospace" font-size="14" fill="#888">31 topics · 4 levels · basics → geek</text>
 
   <!-- Version badge -->
   <g transform="translate(660, 135)">
