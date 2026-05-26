@@ -30,8 +30,8 @@
 
   <!-- Banner -->
   <header class="banner" id="banner">
-    <h1 class="banner-title">Super Java Brain</h1>
-    <p class="banner-subtitle">Pure Java Handbook</p>
+    <img src="src/banner.svg" alt="Super Java Brain" style="max-width:100%;height:auto;max-height:160px;">
+
     <div class="banner-badges">
       <a class="banner-badge-link" href="https://github.com/rricajos/java" target="_blank">
         <i class="material-icons">code</i> GitHub
@@ -97,8 +97,8 @@
           <h2 class="cube-info-title">Like a Pro</h2>
           <ul class="cube-info-list">
             <li class="cube-info-list-item">OOP & Collections</li>
-            <li class="cube-info-list-item">Exceptions</li>
-            <li class="cube-info-list-item">Annotations</li>
+            <li class="cube-info-list-item">JDBC & JUnit</li>
+            <li class="cube-info-list-item">Design Patterns</li>
           </ul>
         </div>
       </div>
@@ -365,6 +365,42 @@
         </div>
         <p class="section-topic-desc">@Override, @Deprecated, custom annotations, meta-annotations, reflection en runtime</p>
         <div class="section-topic-content" id="topic-annotations"></div>
+      </div>
+
+      <div class="section-topic" data-topic="jdbc">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">storage</i>
+            JDBC
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Connection, PreparedStatement, ResultSet, CRUD, transacciones, batch, SQL injection</p>
+        <div class="section-topic-content" id="topic-jdbc"></div>
+      </div>
+
+      <div class="section-topic" data-topic="junit">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">check_circle</i>
+            JUnit 5
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">@Test, assertions, assertThrows, @ParameterizedTest, @Nested, AAA pattern</p>
+        <div class="section-topic-content" id="topic-junit"></div>
+      </div>
+
+      <div class="section-topic" data-topic="design_patterns">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">architecture</i>
+            Design Patterns
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Singleton, Factory, Builder, Observer, Strategy, Decorator, Adapter</p>
+        <div class="section-topic-content" id="topic-design_patterns"></div>
       </div>
     </section>
 

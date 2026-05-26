@@ -29,6 +29,9 @@ var topicPaths = {
   exceptions:             'pro/Exceptions.java',
   collections:            'pro/CollectionsFramework.java',
   annotations:            'pro/Annotations.java',
+  jdbc:                   'pro/JDBC.java',
+  junit:                  'pro/JUnitDemo.java',
+  design_patterns:        'pro/DesignPatterns.java',
   // geek
   generics:               'geek/Generics.java',
   lambdas_and_functional: 'geek/LambdasAndFunctional.java',
