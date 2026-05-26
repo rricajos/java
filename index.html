@@ -66,7 +66,7 @@
           <ul class="cube-info-list">
             <li class="cube-info-list-item">Variables & Types</li>
             <li class="cube-info-list-item">Operators</li>
-            <li class="cube-info-list-item">Control Flow</li>
+            <li class="cube-info-list-item">DateTime & Packages</li>
           </ul>
         </div>
       </div>
@@ -80,9 +80,9 @@
         <div class="cube-info">
           <h2 class="cube-info-title">Good Skills</h2>
           <ul class="cube-info-list">
-            <li class="cube-info-list-item">Methods</li>
-            <li class="cube-info-list-item">Strings</li>
-            <li class="cube-info-list-item">Arrays</li>
+            <li class="cube-info-list-item">Methods & Strings</li>
+            <li class="cube-info-list-item">Optional & Regex</li>
+            <li class="cube-info-list-item">Inner Classes</li>
           </ul>
         </div>
       </div>
@@ -96,9 +96,9 @@
         <div class="cube-info">
           <h2 class="cube-info-title">Like a Pro</h2>
           <ul class="cube-info-list">
-            <li class="cube-info-list-item">OOP & Classes</li>
+            <li class="cube-info-list-item">OOP & Collections</li>
             <li class="cube-info-list-item">Exceptions</li>
-            <li class="cube-info-list-item">Collections</li>
+            <li class="cube-info-list-item">Annotations</li>
           </ul>
         </div>
       </div>
@@ -112,9 +112,9 @@
         <div class="cube-info">
           <h2 class="cube-info-title">Geek for Geeks</h2>
           <ul class="cube-info-list">
-            <li class="cube-info-list-item">Generics</li>
             <li class="cube-info-list-item">Streams & Lambdas</li>
-            <li class="cube-info-list-item">Concurrency</li>
+            <li class="cube-info-list-item">Networking</li>
+            <li class="cube-info-list-item">Reflection & Modules</li>
           </ul>
         </div>
       </div>
@@ -200,6 +200,30 @@
         <p class="section-topic-desc">if/else, for, for-each, while, do-while, break, continue, labeled loops</p>
         <div class="section-topic-content" id="topic-control_flow"></div>
       </div>
+
+      <div class="section-topic" data-topic="datetime_api">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">schedule</i>
+            Date & Time API
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">LocalDate, LocalTime, ZonedDateTime, Instant, Duration, Period, DateTimeFormatter</p>
+        <div class="section-topic-content" id="topic-datetime_api"></div>
+      </div>
+
+      <div class="section-topic" data-topic="packages_and_access">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">lock</i>
+            Packages & Access Modifiers
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">public, private, protected, package-private, encapsulación, imports, final, static</p>
+        <div class="section-topic-content" id="topic-packages_and_access"></div>
+      </div>
     </section>
 
     <!-- GOOD SKILLS -->
@@ -240,6 +264,42 @@
         </div>
         <p class="section-topic-desc">Declaración, iteración, Arrays utility, multidimensional, conversión a List</p>
         <div class="section-topic-content" id="topic-arrays"></div>
+      </div>
+
+      <div class="section-topic" data-topic="optional">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">help_center</i>
+            Optional
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Optional.of, ofNullable, orElse, map, flatMap, filter, ifPresent, antipatrones</p>
+        <div class="section-topic-content" id="topic-optional"></div>
+      </div>
+
+      <div class="section-topic" data-topic="inner_classes">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">layers</i>
+            Inner Classes
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Static nested, inner, local, anonymous, Builder pattern, Iterator pattern</p>
+        <div class="section-topic-content" id="topic-inner_classes"></div>
+      </div>
+
+      <div class="section-topic" data-topic="regex">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">manage_search</i>
+            Regex
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Pattern, Matcher, grupos de captura, validación, reemplazo, split, flags</p>
+        <div class="section-topic-content" id="topic-regex"></div>
       </div>
     </section>
 
@@ -293,6 +353,18 @@
         </div>
         <p class="section-topic-desc">List, Set, Map, Queue, Deque, Iterator, Collections utility</p>
         <div class="section-topic-content" id="topic-collections"></div>
+      </div>
+
+      <div class="section-topic" data-topic="annotations">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">label</i>
+            Annotations
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">@Override, @Deprecated, custom annotations, meta-annotations, reflection en runtime</p>
+        <div class="section-topic-content" id="topic-annotations"></div>
       </div>
     </section>
 
@@ -358,6 +430,42 @@
         </div>
         <p class="section-topic-desc">NIO.2, Path, Files, BufferedReader/Writer, try-with-resources, Scanner</p>
         <div class="section-topic-content" id="topic-file_io"></div>
+      </div>
+
+      <div class="section-topic" data-topic="networking">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">public</i>
+            Networking
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">HttpClient (Java 11+), GET, POST, PUT, DELETE, async, URI, Sockets</p>
+        <div class="section-topic-content" id="topic-networking"></div>
+      </div>
+
+      <div class="section-topic" data-topic="reflection">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">visibility</i>
+            Reflection
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Class, Field, Method, Constructor, acceso dinámico, inspección en runtime</p>
+        <div class="section-topic-content" id="topic-reflection"></div>
+      </div>
+
+      <div class="section-topic" data-topic="modules">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">extension</i>
+            Modules (JPMS)
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">module-info.java, requires, exports, opens, ServiceLoader, jlink</p>
+        <div class="section-topic-content" id="topic-modules"></div>
       </div>
     </section>
 

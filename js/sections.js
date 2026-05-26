@@ -14,21 +14,30 @@ var topicPaths = {
   operators_logical:      'basics/OperatorsLogical.java',
   operators_conditional:  'basics/OperatorsConditional.java',
   control_flow:           'basics/ControlFlow.java',
+  datetime_api:           'basics/DateTimeAPI.java',
+  packages_and_access:    'basics/PackagesAndAccess.java',
   // good
   methods:                'good/Methods.java',
   strings:                'good/Strings.java',
   arrays:                 'good/ArraysDemo.java',
+  optional:               'good/OptionalDemo.java',
+  inner_classes:          'good/InnerClasses.java',
+  regex:                  'good/RegexDemo.java',
   // pro
   oop_classes:            'pro/OopClasses.java',
   oop_inheritance:        'pro/OopInheritance.java',
   exceptions:             'pro/Exceptions.java',
   collections:            'pro/CollectionsFramework.java',
+  annotations:            'pro/Annotations.java',
   // geek
   generics:               'geek/Generics.java',
   lambdas_and_functional: 'geek/LambdasAndFunctional.java',
   streams:                'geek/Streams.java',
   concurrency:            'geek/Concurrency.java',
-  file_io:                'geek/FileIO.java'
+  file_io:                'geek/FileIO.java',
+  networking:             'geek/Networking.java',
+  reflection:             'geek/Reflection.java',
+  modules:                'geek/ModulesDemo.java'
 };
 
 /**
