@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Super Java Brain | Pure Java Handbook</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Ricard Penin Honrubia">
+  <meta name="description"
+    content="SJB - A pure Java handbook with syntax-highlighted code examples organized by difficulty level">
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Super Java Brain" />
+  <meta property="og:description"
+    content="SJB - A pure Java handbook with syntax-highlighted code examples organized by difficulty level" />
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/banner.css">
+  <link rel="stylesheet" href="css/search-box.css">
+  <link rel="stylesheet" href="css/cubes.css">
+  <link rel="stylesheet" href="css/sections.css">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="canonical" href="https://rricajos.github.io/java/" />
+</head>
+
+<body>
+
+  <!-- Banner -->
+  <header class="banner" id="banner">
+    <h1 class="banner-title">Super Java Brain</h1>
+    <p class="banner-subtitle">Pure Java Handbook</p>
+    <div class="banner-badges">
+      <a class="banner-badge-link" href="https://github.com/rricajos/java" target="_blank">
+        <i class="material-icons">code</i> GitHub
+      </a>
+      <a class="banner-badge-link" href="https://docs.oracle.com/en/java/" target="_blank">
+        <i class="material-icons">menu_book</i> Oracle Docs
+      </a>
+    </div>
+  </header>
+
+  <!-- Navigation panel -->
+  <nav aria-label="navigation" class="search-box-form-container">
+
+    <form class="search-box-form">
+      <input class="search-box-form-input" type="text" id="query" name="query" placeholder="Java ToolBox"
+        autocomplete="off" oninput="search()">
+      <div class="search-box-form-submit" onclick="search()">
+        <i class="search-box-form-submit-icon material-icons">search</i>
+      </div>
+    </form>
+
+    <div id="super-cubes-container">
+
+      <div class="cube" onclick="scrollToSection('section-basics')">
+        <div class="cube-container">
+          <div class="cube-side cube-top-side">Basics</div>
+          <div class="cube-side cube-left-side">Basics</div>
+          <div class="cube-side cube-right-side">Basics</div>
+        </div>
+        <div class="cube-info">
+          <h2 class="cube-info-title">Common Basics</h2>
+          <ul class="cube-info-list">
+            <li class="cube-info-list-item">Variables & Types</li>
+            <li class="cube-info-list-item">Operators</li>
+            <li class="cube-info-list-item">Control Flow</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cube" onclick="scrollToSection('section-good')">
+        <div class="cube-container">
+          <div class="cube-side cube-top-side">Good</div>
+          <div class="cube-side cube-left-side">Good</div>
+          <div class="cube-side cube-right-side">Good</div>
+        </div>
+        <div class="cube-info">
+          <h2 class="cube-info-title">Good Skills</h2>
+          <ul class="cube-info-list">
+            <li class="cube-info-list-item">Methods</li>
+            <li class="cube-info-list-item">Strings</li>
+            <li class="cube-info-list-item">Arrays</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cube" onclick="scrollToSection('section-pro')">
+        <div class="cube-container">
+          <div class="cube-side cube-top-side">Pro</div>
+          <div class="cube-side cube-left-side">Pro</div>
+          <div class="cube-side cube-right-side">Pro</div>
+        </div>
+        <div class="cube-info">
+          <h2 class="cube-info-title">Like a Pro</h2>
+          <ul class="cube-info-list">
+            <li class="cube-info-list-item">OOP & Classes</li>
+            <li class="cube-info-list-item">Exceptions</li>
+            <li class="cube-info-list-item">Collections</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cube" onclick="scrollToSection('section-geek')">
+        <div class="cube-container">
+          <div class="cube-side cube-top-side">Geek</div>
+          <div class="cube-side cube-left-side">Geek</div>
+          <div class="cube-side cube-right-side">Geek</div>
+        </div>
+        <div class="cube-info">
+          <h2 class="cube-info-title">Geek for Geeks</h2>
+          <ul class="cube-info-list">
+            <li class="cube-info-list-item">Generics</li>
+            <li class="cube-info-list-item">Streams & Lambdas</li>
+            <li class="cube-info-list-item">Concurrency</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Content sections -->
+  <main class="sections-container">
+
+    <!-- BASICS -->
+    <section class="section" id="section-basics" data-category="basics">
+      <h2 class="section-title">Common Basics</h2>
+
+      <div class="section-topic" data-topic="variables_and_types">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">code</i>
+            Variables & Types
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Primitivos, String, var, casting, wrappers, constantes, comparación</p>
+        <div class="section-topic-content" id="topic-variables_and_types"></div>
+      </div>
+
+      <div class="section-topic" data-topic="operators_arithmetic">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">calculate</i>
+            Arithmetic Operators
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">+, -, *, /, %, ++, --, overflow, Math class</p>
+        <div class="section-topic-content" id="topic-operators_arithmetic"></div>
+      </div>
+
+      <div class="section-topic" data-topic="operators_assignment">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">assignment</i>
+            Assignment Operators
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">+=, -=, *=, /=, %=, bitwise assignment, cast implícito</p>
+        <div class="section-topic-content" id="topic-operators_assignment"></div>
+      </div>
+
+      <div class="section-topic" data-topic="operators_logical">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">rule</i>
+            Logical & Comparison
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">&&, ||, !, short-circuit, bitwise, instanceof, pattern matching</p>
+        <div class="section-topic-content" id="topic-operators_logical"></div>
+      </div>
+
+      <div class="section-topic" data-topic="operators_conditional">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">help_outline</i>
+            Conditional & Switch
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Ternario (?:), switch clásico, switch expressions (Java 14+), pattern matching (Java 21+)</p>
+        <div class="section-topic-content" id="topic-operators_conditional"></div>
+      </div>
+
+      <div class="section-topic" data-topic="control_flow">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">alt_route</i>
+            Control Flow
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">if/else, for, for-each, while, do-while, break, continue, labeled loops</p>
+        <div class="section-topic-content" id="topic-control_flow"></div>
+      </div>
+    </section>
+
+    <!-- GOOD SKILLS -->
+    <section class="section" id="section-good" data-category="good">
+      <h2 class="section-title">Good Skills</h2>
+
+      <div class="section-topic" data-topic="methods">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">functions</i>
+            Methods
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Declaración, sobrecarga, varargs, paso por valor, recursión</p>
+        <div class="section-topic-content" id="topic-methods"></div>
+      </div>
+
+      <div class="section-topic" data-topic="strings">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">text_fields</i>
+            Strings
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">String methods, StringBuilder, split/join, format, regex, comparación</p>
+        <div class="section-topic-content" id="topic-strings"></div>
+      </div>
+
+      <div class="section-topic" data-topic="arrays">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">view_list</i>
+            Arrays
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Declaración, iteración, Arrays utility, multidimensional, conversión a List</p>
+        <div class="section-topic-content" id="topic-arrays"></div>
+      </div>
+    </section>
+
+    <!-- PRO -->
+    <section class="section" id="section-pro" data-category="pro">
+      <h2 class="section-title">Like a Pro</h2>
+
+      <div class="section-topic" data-topic="oop_classes">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">account_tree</i>
+            OOP & Classes
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Clases, constructores, encapsulación, static, records, enums, equals/hashCode</p>
+        <div class="section-topic-content" id="topic-oop_classes"></div>
+      </div>
+
+      <div class="section-topic" data-topic="oop_inheritance">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">share</i>
+            Inheritance & Polymorphism
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">extends, super, override, abstract, interfaces, sealed classes, casting</p>
+        <div class="section-topic-content" id="topic-oop_inheritance"></div>
+      </div>
+
+      <div class="section-topic" data-topic="exceptions">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">bug_report</i>
+            Exception Handling
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">try/catch/finally, checked vs unchecked, throw, custom exceptions, try-with-resources</p>
+        <div class="section-topic-content" id="topic-exceptions"></div>
+      </div>
+
+      <div class="section-topic" data-topic="collections">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">data_object</i>
+            Collections Framework
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">List, Set, Map, Queue, Deque, Iterator, Collections utility</p>
+        <div class="section-topic-content" id="topic-collections"></div>
+      </div>
+    </section>
+
+    <!-- GEEK -->
+    <section class="section" id="section-geek" data-category="geek">
+      <h2 class="section-title">Geek for Geeks</h2>
+
+      <div class="section-topic" data-topic="generics">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">tune</i>
+            Generics
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Clases genéricas, bounded types, wildcards, PECS, type erasure</p>
+        <div class="section-topic-content" id="topic-generics"></div>
+      </div>
+
+      <div class="section-topic" data-topic="lambdas_and_functional">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">bolt</i>
+            Lambdas & Functional
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Lambda expressions, Predicate, Function, Consumer, Supplier, method references</p>
+        <div class="section-topic-content" id="topic-lambdas_and_functional"></div>
+      </div>
+
+      <div class="section-topic" data-topic="streams">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">water</i>
+            Streams API
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">filter, map, flatMap, reduce, collect, Collectors, parallel streams</p>
+        <div class="section-topic-content" id="topic-streams"></div>
+      </div>
+
+      <div class="section-topic" data-topic="concurrency">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">sync</i>
+            Concurrency
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">Thread, Runnable, synchronized, ExecutorService, Future, CompletableFuture</p>
+        <div class="section-topic-content" id="topic-concurrency"></div>
+      </div>
+
+      <div class="section-topic" data-topic="file_io">
+        <div class="section-topic-header" onclick="toggleTopic(this)">
+          <h3 class="section-topic-title">
+            <i class="material-icons section-topic-icon">folder_open</i>
+            File I/O
+          </h3>
+          <i class="material-icons section-topic-arrow">expand_more</i>
+        </div>
+        <p class="section-topic-desc">NIO.2, Path, Files, BufferedReader/Writer, try-with-resources, Scanner</p>
+        <div class="section-topic-content" id="topic-file_io"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Back to top button -->
+  <button class="back-to-top" id="backToTop" onclick="smoothScrollToTop()">
+    <i class="material-icons">keyboard_arrow_up</i>
+  </button>
+
+  <script src="js/banner.js"></script>
+  <script src="js/sections.js"></script>
+</body>
+
+</html>
