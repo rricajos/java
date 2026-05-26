@@ -208,7 +208,7 @@ function highlightLine(line) {
 
   // Common types (after keywords to avoid conflicts)
   codePart = codePart.replace(
-    /\b(String|Integer|Double|Float|Long|Boolean|Character|Byte|Short|Object|System|Math|List|Map|Set|Queue|Deque|ArrayList|LinkedList|HashMap|HashSet|TreeMap|TreeSet|Optional|Stream|Thread|Future|CompletableFuture|Path|Files|Arrays|Collections|StringBuilder|Comparator|Iterator|Exception|RuntimeException|Runnable|Callable)\b/g,
+    /\b(String|Integer|Double|Float|Long|Boolean|Character|Byte|Short|Object|System|Math|List|Map|Set|Queue|Deque|ArrayList|LinkedList|HashMap|HashSet|TreeMap|TreeSet|LinkedHashMap|PriorityQueue|Stack|Properties|Optional|Stream|Thread|Future|CompletableFuture|ExecutorService|Executors|AtomicInteger|ReentrantLock|Semaphore|Path|Files|File|BufferedReader|BufferedWriter|InputStream|OutputStream|Scanner|Arrays|Collections|StringBuilder|Comparator|Iterator|Exception|RuntimeException|ArithmeticException|IllegalArgumentException|IllegalStateException|NullPointerException|IOException|SQLException|InvocationTargetException|Runnable|Callable|Method|Field|Constructor|Class|Annotation|RetentionPolicy|ElementType|Connection|Statement|PreparedStatement|ResultSet|DriverManager|Pattern|Matcher|Duration|Instant|LocalDate|LocalTime|LocalDateTime|DateTimeFormatter|Random|UUID)\b/g,
     '<span class="code-type">$&</span>'
   );
 
