@@ -1,6 +1,12 @@
 .search-box-form-container {
   background-color: var(--black-color);
   padding: 1rem 1rem 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(26, 26, 46, 0.92);
 }
 
 .search-box-form {
@@ -13,7 +19,7 @@
 
 .search-box-form-input {
   box-sizing: border-box;
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
   padding: 0 3em 0 1rem;
   font-size: 1em;
   border-radius: 8px;

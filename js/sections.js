@@ -65,6 +65,10 @@ function toggleTopic(headerEl) {
   if (isOpen) {
     topicEl.classList.remove('open');
     headerEl.setAttribute('aria-expanded', 'false');
+    // Clear hash when closing
+    if (window.location.hash === '#' + topicEl.dataset.topic) {
+      history.replaceState(null, '', window.location.pathname);
+    }
   } else {
     topicEl.classList.add('open');
     headerEl.setAttribute('aria-expanded', 'true');
@@ -75,6 +79,9 @@ function toggleTopic(headerEl) {
 
     // Mark topic as read
     markTopicRead(topicEl.dataset.topic);
+
+    // Update URL hash for deep linking
+    history.replaceState(null, '', '#' + topicEl.dataset.topic);
   }
 }
 
@@ -597,4 +604,31 @@ document.addEventListener('keydown', function (event) {
     document.documentElement.setAttribute('data-theme', t);
     icon.textContent = t === 'dark' ? 'light_mode' : 'dark_mode';
   }
+})();
+
+// ============================================================
+// DEEP LINKING — open topic from URL hash on page load
+// ============================================================
+
+(function () {
+  var hash = window.location.hash.replace('#', '');
+  if (!hash) return;
+
+  var topicEl = document.querySelector('.section-topic[data-topic="' + hash + '"]');
+  if (!topicEl) return;
+
+  var header = topicEl.querySelector('.section-topic-header');
+  var contentEl = topicEl.querySelector('.section-topic-content');
+
+  topicEl.classList.add('open');
+  if (header) header.setAttribute('aria-expanded', 'true');
+  if (contentEl && !contentEl.dataset.loaded) {
+    loadTopicCode(hash, contentEl);
+  }
+  markTopicRead(hash);
+
+  // Scroll to the topic after a short delay for rendering
+  setTimeout(function () {
+    topicEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 150);
 })();
