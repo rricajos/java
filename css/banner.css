@@ -1,61 +1,201 @@
 .banner {
-  height: 160px;
+  height: 280px;
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
   justify-content: center;
-  background: var(--black-color);
-  transition: height 0.2s ease;
-  gap: 0.5em;
-  border-bottom: 1px solid var(--border-color);
+  background: #0a0a1a;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.25s ease;
+  gap: 0;
+}
+
+/* Radial glow orbs */
+.banner-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.banner-glow--orange {
+  width: 500px;
+  height: 500px;
+  top: -40%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(248, 152, 32, 0.18) 0%, transparent 70%);
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+.banner-glow--blue {
+  width: 400px;
+  height: 400px;
+  bottom: -40%;
+  left: -8%;
+  background: radial-gradient(circle, rgba(83, 130, 161, 0.12) 0%, transparent 70%);
+  animation: pulseGlow 6s ease-in-out 3s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+/* Subtle grid pattern overlay */
+.banner-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* Content */
+.banner-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+}
+
+.banner-icon {
+  font-size: 2.8em;
+  line-height: 1;
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(248, 152, 32, 0.3));
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .banner-title {
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-  font-size: 2.2em;
-  font-weight: 700;
-  color: var(--primary-color);
+  font-size: 2.4em;
+  font-weight: 800;
   margin: 0;
-  text-align: center;
   letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #f89820 0%, #ffc66d 40%, #f89820 70%, #e08218 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s ease infinite;
+  text-shadow: none;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 250% center; }
 }
 
 .banner-subtitle {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9em;
-  color: var(--accent-color);
+  font-size: 1em;
+  color: #7d8590;
   margin: 0;
-  text-align: center;
   font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
+.banner-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.6em;
+  font-size: 0.8em;
+  color: #484f58;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.banner-dot {
+  color: #30363d;
+}
+
+.banner-java-badge {
+  background: linear-gradient(135deg, rgba(248, 152, 32, 0.15), rgba(248, 152, 32, 0.08));
+  color: var(--primary-color);
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 0.15em 0.6em;
+  border-radius: 20px;
+  border: 1px solid rgba(248, 152, 32, 0.2);
+  margin-left: 0.2em;
+}
+
+/* Badge links */
 .banner-badges {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
   gap: 0.5em;
-  margin-top: 0.4em;
+  margin-top: 0.8em;
 }
 
 .banner-badge-link {
   display: flex;
   align-items: center;
   gap: 0.3em;
-  color: #8898a8;
+  color: #656d76;
   padding: 0.25em 0.7em;
   border-radius: 6px;
   font-size: 0.75em;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: color 0.15s ease, border-color 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 .banner-badge-link:hover {
   color: var(--primary-color);
-  border-color: rgba(248, 152, 32, 0.3);
+  border-color: rgba(248, 152, 32, 0.25);
+  background: rgba(248, 152, 32, 0.06);
 }
 
 .banner-badge-link .material-icons {
   font-size: 14px;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .banner {
+    height: 240px;
+  }
+
+  .banner-icon {
+    font-size: 2.2em;
+  }
+
+  .banner-title {
+    font-size: 1.7em;
+  }
+
+  .banner-subtitle {
+    font-size: 0.85em;
+  }
+
+  .banner-stats {
+    font-size: 0.7em;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .banner-glow--orange {
+    width: 300px;
+    height: 300px;
+  }
+
+  .banner-glow--blue {
+    width: 250px;
+    height: 250px;
+  }
 }
