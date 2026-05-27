@@ -137,29 +137,40 @@ function renderCode(contentEl, code) {
   toolbar.appendChild(copyBtn);
   contentEl.appendChild(toolbar);
 
-  // Render code lines
+  // Render code lines with line numbers
   var lines = code.split('\n');
-  var fragment = document.createDocumentFragment();
+  var codeTable = document.createElement('div');
+  codeTable.className = 'code-lines';
 
-  lines.forEach(function (line) {
-    var span = document.createElement('span');
-    span.style.display = 'block';
-    span.style.minHeight = '1.2em';
+  lines.forEach(function (line, index) {
+    var row = document.createElement('div');
+    row.className = 'code-line';
+
+    // Line number
+    var num = document.createElement('span');
+    num.className = 'code-line-num';
+    num.textContent = index + 1;
+    row.appendChild(num);
+
+    // Line content
+    var content = document.createElement('span');
+    content.className = 'code-line-content';
 
     if (/^\/\/\/{3,}/.test(line.trim())) {
-      span.className = 'code-separator';
-      span.textContent = line;
+      content.className += ' code-separator';
+      content.textContent = line;
     } else if (/^\s*\/\//.test(line)) {
-      span.className = 'code-comment';
-      span.textContent = line;
+      content.className += ' code-comment';
+      content.textContent = line;
     } else {
-      span.innerHTML = highlightLine(line);
+      content.innerHTML = highlightLine(line);
     }
 
-    fragment.appendChild(span);
+    row.appendChild(content);
+    codeTable.appendChild(row);
   });
 
-  contentEl.appendChild(fragment);
+  contentEl.appendChild(codeTable);
   contentEl.dataset.loaded = 'true';
 }
 
@@ -335,14 +346,46 @@ function filterTopics(query) {
 
 (function () {
   document.querySelectorAll('.section').forEach(function (section) {
-    var count = section.querySelectorAll('.section-topic').length;
+    var topics = section.querySelectorAll('.section-topic');
+    var count = topics.length;
     var title = section.querySelector('.section-title');
-    if (title && count > 0) {
-      var badge = document.createElement('span');
-      badge.className = 'section-title-count';
-      badge.textContent = '(' + count + ' topics)';
-      title.appendChild(badge);
-    }
+    if (!title || count === 0) return;
+
+    // Topic count badge
+    var badge = document.createElement('span');
+    badge.className = 'section-title-count';
+    badge.textContent = '(' + count + ' topics)';
+    title.appendChild(badge);
+
+    // Expand/collapse all button
+    var toggleBtn = document.createElement('button');
+    toggleBtn.className = 'section-toggle-btn';
+    toggleBtn.innerHTML = '<i class="material-icons" style="font-size:18px">unfold_more</i>';
+    toggleBtn.title = 'Expandir / Colapsar todo';
+    toggleBtn.addEventListener('click', function () {
+      var openTopics = section.querySelectorAll('.section-topic.open');
+      var allOpen = openTopics.length === count;
+
+      topics.forEach(function (topic) {
+        var header = topic.querySelector('.section-topic-header');
+        var contentEl = topic.querySelector('.section-topic-content');
+
+        if (allOpen) {
+          topic.classList.remove('open');
+          if (header) header.setAttribute('aria-expanded', 'false');
+        } else {
+          topic.classList.add('open');
+          if (header) header.setAttribute('aria-expanded', 'true');
+          if (contentEl && !contentEl.dataset.loaded) {
+            loadTopicCode(topic.dataset.topic, contentEl);
+          }
+        }
+      });
+
+      toggleBtn.querySelector('i').textContent = allOpen ? 'unfold_more' : 'unfold_less';
+    });
+
+    title.appendChild(toggleBtn);
   });
 })();
 

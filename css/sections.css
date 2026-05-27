@@ -15,6 +15,9 @@
   border-bottom: 3px solid var(--primary-color);
   padding-bottom: 0.3em;
   margin-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
 }
 
 .section-title-count {
@@ -22,7 +25,24 @@
   font-size: 0.55em;
   color: var(--white-second-color);
   font-weight: normal;
-  margin-left: 0.5em;
+}
+
+.section-toggle-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 0.4em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.15em 0.3em;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.section-toggle-btn:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 /* Topic card */
@@ -120,6 +140,32 @@
   overflow-y: auto;
 }
 
+/* Line numbers */
+.code-lines {
+  counter-reset: line;
+}
+
+.code-line {
+  display: flex;
+  min-height: 1.2em;
+}
+
+.code-line-num {
+  flex-shrink: 0;
+  width: 3.5em;
+  text-align: right;
+  padding-right: 1em;
+  color: #555;
+  user-select: none;
+  border-right: 1px solid #333;
+  margin-right: 1em;
+}
+
+.code-line-content {
+  flex: 1;
+  white-space: pre;
+}
+
 /* Syntax highlighting */
 .section-topic-content .code-comment {
   color: #6a9955;
@@ -147,9 +193,9 @@
 
 .section-topic-content .code-separator {
   color: #555;
-  display: block;
   border-bottom: 1px solid #333;
-  margin: 0.3em 0;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.3em;
 }
 
 /* Loading state */
