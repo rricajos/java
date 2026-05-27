@@ -72,16 +72,18 @@
   position: absolute;
   right: 3.5em;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) scale(0.7);
   background: none;
   border: none;
   color: #656d76;
   cursor: pointer;
   padding: 0.2em;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, opacity 0.2s ease, transform 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .search-box-clear-btn .material-icons {
@@ -93,5 +95,7 @@
 }
 
 .search-box-clear-btn.visible {
-  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
 }

@@ -79,20 +79,20 @@
   <nav aria-label="navigation" class="search-box-form-container">
 
     <form class="search-box-form">
-      <input class="search-box-form-input" type="text" id="query" name="query" placeholder="Java ToolBox"
-        autocomplete="off" oninput="search()">
-      <button type="button" class="search-box-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Limpiar búsqueda">
+      <input class="search-box-form-input" type="text" id="query" name="query" placeholder="Buscar topics..."
+        autocomplete="off" oninput="search()" aria-label="Buscar topics">
+      <button type="button" class="search-box-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
         <i class="material-icons">close</i>
       </button>
       <div class="search-box-form-submit" onclick="search()">
         <i class="search-box-form-submit-icon material-icons">search</i>
       </div>
     </form>
-    <div class="search-results-count" id="searchResultsCount"></div>
+    <div class="search-results-count" id="searchResultsCount" aria-live="polite" role="status"></div>
 
     <div id="super-cubes-container">
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-basics')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-basics')}">
+      <div class="cube" role="button" tabindex="0" aria-label="Ir a sección Basics" onclick="scrollToSection('section-basics')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-basics')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Basics</div>
           <div class="cube-side cube-left-side">Basics</div>
@@ -108,7 +108,7 @@
         </div>
       </div>
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-good')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-good')}">
+      <div class="cube" role="button" tabindex="0" aria-label="Ir a sección Good Skills" onclick="scrollToSection('section-good')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-good')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Good</div>
           <div class="cube-side cube-left-side">Good</div>
@@ -124,7 +124,7 @@
         </div>
       </div>
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-pro')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-pro')}">
+      <div class="cube" role="button" tabindex="0" aria-label="Ir a sección Pro" onclick="scrollToSection('section-pro')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-pro')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Pro</div>
           <div class="cube-side cube-left-side">Pro</div>
@@ -140,7 +140,7 @@
         </div>
       </div>
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-geek')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-geek')}">
+      <div class="cube" role="button" tabindex="0" aria-label="Ir a sección Geek" onclick="scrollToSection('section-geek')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-geek')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Geek</div>
           <div class="cube-side cube-left-side">Geek</div>
@@ -158,6 +158,13 @@
 
     </div>
   </nav>
+
+  <!-- Empty search state -->
+  <div class="search-empty" id="searchEmpty">
+    <i class="material-icons search-empty-icon">search_off</i>
+    <p class="search-empty-text">No se encontraron resultados</p>
+    <p class="search-empty-hint">Prueba con otro término o <button class="search-empty-clear" onclick="clearSearch()">limpia la búsqueda</button></p>
+  </div>
 
   <!-- Content sections -->
   <main class="sections-container">

@@ -156,7 +156,13 @@ function loadTopicCode(topicName, contentEl) {
   }
 
   contentEl.classList.add('loading');
-  contentEl.innerHTML = '';
+  contentEl.innerHTML = '<div class="code-skeleton">'
+    + '<div class="code-skeleton-line"></div>'
+    + '<div class="code-skeleton-line"></div>'
+    + '<div class="code-skeleton-line"></div>'
+    + '<div class="code-skeleton-line"></div>'
+    + '<div class="code-skeleton-line"></div>'
+    + '</div>';
 
   if (codeCache[topicName]) {
     renderCode(contentEl, codeCache[topicName]);
@@ -492,6 +498,16 @@ function filterTopics(query) {
       ? totalVisible + ' de ' + totalTopics + ' resultados'
       : '';
   }
+
+  // Show/hide empty state
+  var emptyEl = document.getElementById('searchEmpty');
+  if (emptyEl) {
+    if (normalizedQuery && totalVisible === 0) {
+      emptyEl.classList.add('visible');
+    } else {
+      emptyEl.classList.remove('visible');
+    }
+  }
 }
 
 // ============================================================
@@ -645,6 +661,33 @@ document.addEventListener('keydown', function (event) {
     document.documentElement.setAttribute('data-theme', t);
     icon.textContent = t === 'dark' ? 'light_mode' : 'dark_mode';
   }
+})();
+
+// ============================================================
+// TOPIC CARD ENTRANCE ANIMATION (IntersectionObserver)
+// ============================================================
+
+(function () {
+  var cards = document.querySelectorAll('.section-topic');
+  if (!('IntersectionObserver' in window)) {
+    // Fallback: show all cards immediately
+    cards.forEach(function (c) { c.classList.add('visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+
+  cards.forEach(function (card, i) {
+    card.style.transitionDelay = (i % 6) * 0.04 + 's';
+    observer.observe(card);
+  });
 })();
 
 // ============================================================

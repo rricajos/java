@@ -39,7 +39,19 @@
   border-radius: 10px;
   letter-spacing: normal;
   text-transform: none;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.3s ease, opacity 0.3s ease;
+  animation: slideInBadge 0.4s ease both;
+}
+
+@keyframes slideInBadge {
+  from {
+    opacity: 0;
+    transform: translateX(-8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
 .section-progress.complete {
@@ -77,12 +89,25 @@
   border-radius: 10px;
   margin-bottom: 0.6em;
   overflow: hidden;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease,
+              opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  transform: translateY(16px);
 }
 
-.section-topic:hover {
+.section-topic.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-topic.visible:hover {
   box-shadow: var(--shadow-sm);
   border-color: var(--primary-second-color);
+  transform: translateY(-2px);
+}
+
+.section-topic-header:active {
+  transform: scale(0.995);
 }
 
 .section-topic.open {
@@ -171,6 +196,29 @@
   overflow-y: auto;
 }
 
+/* Webkit scrollbar for Chrome/Safari/Edge */
+.section-topic-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.section-topic-content::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+.section-topic-content::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+
+.section-topic-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+.section-topic-content::-webkit-scrollbar-corner {
+  background: #0d1117;
+}
+
 /* Line numbers */
 .code-lines {
   counter-reset: line;
@@ -236,28 +284,36 @@
   margin-bottom: 0.3em;
 }
 
-/* Loading state */
+/* Loading state — skeleton */
 .section-topic-content.loading {
-  max-height: 80px;
+  max-height: 160px;
   opacity: 1;
-  padding: 2em 1.5em;
+  padding: 1.2em 1.5em;
+}
+
+.code-skeleton {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.6em;
 }
 
-.section-topic-content.loading::after {
-  content: '';
-  width: 24px;
-  height: 24px;
-  border: 2px solid #21262d;
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+.code-skeleton-line {
+  height: 12px;
+  background: linear-gradient(90deg, #21262d 25%, #30363d 50%, #21262d 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeletonShimmer 1.5s ease infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.code-skeleton-line:nth-child(1) { width: 40%; }
+.code-skeleton-line:nth-child(2) { width: 75%; animation-delay: 0.1s; }
+.code-skeleton-line:nth-child(3) { width: 55%; animation-delay: 0.2s; }
+.code-skeleton-line:nth-child(4) { width: 85%; animation-delay: 0.3s; }
+.code-skeleton-line:nth-child(5) { width: 35%; animation-delay: 0.4s; }
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* Code toolbar */
@@ -298,6 +354,51 @@
 
 .section.filtered-out {
   display: none;
+}
+
+/* Search empty state */
+.search-empty {
+  display: none;
+  text-align: center;
+  padding: 4em 2em;
+  color: var(--text-secondary);
+}
+
+.search-empty.visible {
+  display: block;
+}
+
+.search-empty-icon {
+  font-size: 3em !important;
+  color: var(--border-color);
+  margin-bottom: 0.2em;
+}
+
+.search-empty-text {
+  font-size: 1.15em;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 0.3em;
+}
+
+.search-empty-hint {
+  font-size: 0.85em;
+  margin: 0;
+}
+
+.search-empty-clear {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.search-empty-clear:hover {
+  color: var(--primary-second-color);
 }
 
 /* Search results count */
@@ -397,6 +498,21 @@
   outline: 2px solid var(--primary-color);
   outline-offset: -2px;
   background-color: var(--hover-bg);
+}
+
+.code-toolbar-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.section-toggle-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
 }
 
 /* Print styles */
