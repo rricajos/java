@@ -408,7 +408,7 @@ function search() {
     banner.style.height = "0px";
     if (clearBtn) clearBtn.classList.add('visible');
   } else {
-    banner.style.height = "180px";
+    banner.style.height = "160px";
     if (clearBtn) clearBtn.classList.remove('visible');
   }
 

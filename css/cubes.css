@@ -1,21 +1,22 @@
 #super-cubes-container {
-  padding: 2em 0 1em 0;
+  padding: 1.5em 0 0.8em 0;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   align-items: flex-start;
+  gap: 0;
 }
 
 .cube {
   padding-top: 0.5em;
-  margin: 8px;
-  width: 150px;
+  margin: 6px;
+  width: 140px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .cube:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
 .cube:focus-visible {
@@ -26,63 +27,86 @@
 
 .cube-container {
   width: 100%;
-  height: 170px;
+  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .cube-info {
-  padding: 0.5em;
-  color: white;
-  font-size: 20px;
+  padding: 0.4em;
+  color: #8898a8;
+  font-size: 18px;
   width: 100%;
-  max-width: 170px;
+  max-width: 160px;
   box-sizing: border-box;
 }
 
 .cube-info-title {
-  font-size: 16px;
+  font-size: 13px;
+  font-weight: 600;
   margin: 0;
+  color: #b0bec5;
 }
 
 .cube-info-list {
-  margin: 0;
-  padding-inline-start: 15px;
+  margin: 0.2em 0 0;
+  padding-inline-start: 14px;
 }
 
 .cube-info-list-item {
-  font-size: 16px;
+  font-size: 12px;
+  color: #7d8590;
+  line-height: 1.6;
 }
 
 .cube-side {
-  height: 80px;
-  width: 80px;
-  line-height: 80px;
+  height: 70px;
+  width: 70px;
+  line-height: 70px;
   position: absolute;
   text-align: center;
   color: white;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .cube-top-side {
-  border: 1px solid var(--black-second-color);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   color: #fff;
   background-color: var(--primary-color);
   transform: rotate(-45deg) skew(15deg, 15deg) translate(50%, -50%);
 }
 
 .cube-left-side {
-  border: 1px solid var(--black-second-color);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   color: #fff;
   background-color: var(--accent-color);
   transform: rotate(15deg) skew(15deg, 15deg) translate(-50%, 50%);
 }
 
 .cube-right-side {
-  border: 1px solid var(--black-second-color);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   color: #fff;
   background-color: var(--primary-second-color);
   transform: rotate(-15deg) skew(-15deg, -15deg) translate(50%, 50%);
+}
+
+@media screen and (max-width: 600px) {
+  .cube {
+    width: 130px;
+    margin: 4px;
+  }
+
+  .cube-side {
+    height: 60px;
+    width: 60px;
+    line-height: 60px;
+    font-size: 14px;
+  }
+
+  .cube-container {
+    height: 130px;
+  }
 }

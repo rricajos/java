@@ -1,11 +1,11 @@
 .site-footer {
-  background: linear-gradient(135deg, var(--black-second-color) 0%, var(--black-color) 100%);
-  color: var(--white-second-color);
-  padding: 2em 1em;
+  background: var(--black-color);
+  color: #7d8590;
+  padding: 1.5em 1em;
   margin-top: 2em;
-  font-family: monospace;
-  font-size: 0.85em;
+  font-size: 0.8em;
   text-align: center;
+  border-top: 1px solid var(--border-color);
 }
 
 .footer-content {
@@ -13,48 +13,51 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 0.8em;
 }
 
 .footer-brand {
   color: var(--primary-color);
-  font-size: 1.1em;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1em;
+  letter-spacing: 0.01em;
 }
 
 .footer-shortcuts {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
-  gap: 1.2em;
+  gap: 1em;
 }
 
 .footer-shortcut {
   display: flex;
   align-items: center;
-  gap: 0.4em;
-  color: #888;
+  gap: 0.35em;
+  color: #656d76;
+  font-size: 0.9em;
 }
 
 .footer-shortcut kbd {
-  background: #444;
-  color: var(--white-color);
-  padding: 0.15em 0.5em;
-  border-radius: 0.3em;
-  border: 1px solid #555;
-  font-family: monospace;
-  font-size: 0.9em;
+  background: #21262d;
+  color: #b0bec5;
+  padding: 0.1em 0.45em;
+  border-radius: 4px;
+  border: 1px solid #30363d;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.85em;
 }
 
 .footer-links {
   display: flex;
   justify-content: center;
-  gap: 1.5em;
+  gap: 1.2em;
 }
 
 .footer-links a {
   color: var(--accent-color);
-  transition: color 0.2s ease;
+  font-weight: 500;
+  transition: color 0.15s ease;
 }
 
 .footer-links a:hover {
@@ -64,6 +67,6 @@
 @media screen and (max-width: 600px) {
   .footer-shortcuts {
     flex-direction: column;
-    gap: 0.6em;
+    gap: 0.5em;
   }
 }
