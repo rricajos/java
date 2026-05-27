@@ -5,6 +5,23 @@
 
 var codeCache = {};
 
+/**
+ * Show a toast notification
+ */
+function showToast(icon, message) {
+  var container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  var toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = '<i class="material-icons">' + icon + '</i> ' + message;
+  container.appendChild(toast);
+
+  setTimeout(function () {
+    if (toast.parentNode) toast.parentNode.removeChild(toast);
+  }, 2500);
+}
+
 // Map topic names to their file paths
 var topicPaths = {
   // basics
@@ -203,6 +220,7 @@ function renderCode(contentEl, code) {
   copyBtn.addEventListener('click', function () {
     navigator.clipboard.writeText(code).then(function () {
       copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+      showToast('check', 'Código copiado al portapapeles');
       setTimeout(function () {
         copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
       }, 2000);
@@ -222,8 +240,26 @@ function renderCode(contentEl, code) {
       : '<i class="material-icons" style="font-size:16px">wrap_text</i> Wrap';
   });
 
+  // Share link button
+  var shareBtn = document.createElement('button');
+  shareBtn.className = 'code-toolbar-btn';
+  shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">link</i> Share';
+  shareBtn.addEventListener('click', function () {
+    var topicEl = contentEl.closest('.section-topic');
+    var topicName = topicEl ? topicEl.dataset.topic : '';
+    var url = window.location.origin + window.location.pathname + '#' + topicName;
+    navigator.clipboard.writeText(url).then(function () {
+      shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+      showToast('link', 'Enlace copiado al portapapeles');
+      setTimeout(function () {
+        shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">link</i> Share';
+      }, 2000);
+    });
+  });
+
   toolbar.appendChild(copyBtn);
   toolbar.appendChild(wrapBtn);
+  toolbar.appendChild(shareBtn);
   contentEl.appendChild(toolbar);
 
   // Render code lines with line numbers
@@ -301,6 +337,19 @@ function renderCode(contentEl, code) {
 
   contentEl.appendChild(codeTable);
   contentEl.dataset.loaded = 'true';
+
+  // Add line count badge to the topic description
+  var topicEl = contentEl.closest('.section-topic');
+  if (topicEl && !topicEl.querySelector('.topic-lines-badge')) {
+    var descEl = topicEl.querySelector('.section-topic-desc');
+    if (descEl) {
+      var linesBadge = document.createElement('span');
+      linesBadge.className = 'topic-lines-badge';
+      linesBadge.textContent = lines.length + ' lines';
+      descEl.appendChild(document.createTextNode(' '));
+      descEl.appendChild(linesBadge);
+    }
+  }
 }
 
 /**
@@ -622,15 +671,55 @@ function filterTopics(query) {
 // ============================================================
 
 document.addEventListener('keydown', function (event) {
+  var isInput = document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA';
+
   if (event.key === 'Escape') {
     document.querySelectorAll('.section-topic.open').forEach(function (topic) {
       topic.classList.remove('open');
+      var h = topic.querySelector('.section-topic-header');
+      if (h) h.setAttribute('aria-expanded', 'false');
     });
+    history.replaceState(null, '', window.location.pathname);
   }
 
-  if ((event.ctrlKey && event.key === 'k') || (event.key === '/' && document.activeElement.tagName !== 'INPUT')) {
+  if ((event.ctrlKey && event.key === 'k') || (event.key === '/' && !isInput)) {
     event.preventDefault();
     document.getElementById('query').focus();
+  }
+
+  // J/K navigation between topics
+  if (!isInput && (event.key === 'j' || event.key === 'k')) {
+    var allTopics = Array.prototype.slice.call(
+      document.querySelectorAll('.section-topic:not(.filtered-out)')
+    );
+    if (allTopics.length === 0) return;
+
+    var openTopics = document.querySelectorAll('.section-topic.open');
+    var currentIdx = -1;
+
+    if (openTopics.length > 0) {
+      var lastOpen = openTopics[openTopics.length - 1];
+      currentIdx = allTopics.indexOf(lastOpen);
+    }
+
+    var nextIdx;
+    if (event.key === 'j') {
+      nextIdx = currentIdx < allTopics.length - 1 ? currentIdx + 1 : 0;
+    } else {
+      nextIdx = currentIdx > 0 ? currentIdx - 1 : allTopics.length - 1;
+    }
+
+    // Close all open topics
+    openTopics.forEach(function (t) {
+      t.classList.remove('open');
+      var h = t.querySelector('.section-topic-header');
+      if (h) h.setAttribute('aria-expanded', 'false');
+    });
+
+    // Open the target topic
+    var target = allTopics[nextIdx];
+    var header = target.querySelector('.section-topic-header');
+    if (header) toggleTopic(header);
   }
 });
 
