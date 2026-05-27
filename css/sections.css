@@ -197,6 +197,12 @@
   white-space: pre;
 }
 
+/* Wrap mode */
+.code-lines.wrapped .code-line-content {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 /* Syntax highlighting — GitHub-inspired palette */
 .section-topic-content .code-comment {
   color: #7d8590;

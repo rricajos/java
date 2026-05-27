@@ -82,6 +82,11 @@ function toggleTopic(headerEl) {
 
     // Update URL hash for deep linking
     history.replaceState(null, '', '#' + topicEl.dataset.topic);
+
+    // Scroll topic into view after a short delay for animation
+    setTimeout(function () {
+      topicEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
   }
 }
 
@@ -198,7 +203,21 @@ function renderCode(contentEl, code) {
     });
   });
 
+  // Wrap toggle button
+  var wrapBtn = document.createElement('button');
+  wrapBtn.className = 'code-toolbar-btn';
+  wrapBtn.innerHTML = '<i class="material-icons" style="font-size:16px">wrap_text</i> Wrap';
+  wrapBtn.addEventListener('click', function () {
+    var codeLines = contentEl.querySelector('.code-lines');
+    if (!codeLines) return;
+    var isWrapped = codeLines.classList.toggle('wrapped');
+    wrapBtn.innerHTML = isWrapped
+      ? '<i class="material-icons" style="font-size:16px">wrap_text</i> Nowrap'
+      : '<i class="material-icons" style="font-size:16px">wrap_text</i> Wrap';
+  });
+
   toolbar.appendChild(copyBtn);
+  toolbar.appendChild(wrapBtn);
   contentEl.appendChild(toolbar);
 
   // Render code lines with line numbers
@@ -481,13 +500,35 @@ function filterTopics(query) {
 
 (function () {
   var backToTop = document.getElementById('backToTop');
-  if (!backToTop) return;
+  var scrollProgress = document.getElementById('scrollProgress');
+  var nav = document.querySelector('.search-box-form-container');
 
   window.addEventListener('scroll', function () {
-    if (window.scrollY > 300) {
-      backToTop.classList.add('visible');
-    } else {
-      backToTop.classList.remove('visible');
+    var y = window.scrollY;
+
+    // Back to top visibility
+    if (backToTop) {
+      if (y > 300) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    }
+
+    // Scroll progress bar
+    if (scrollProgress) {
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
+      scrollProgress.style.width = pct + '%';
+    }
+
+    // Compact nav — hide cubes when scrolled past banner
+    if (nav) {
+      if (y > 200) {
+        nav.classList.add('compact');
+      } else {
+        nav.classList.remove('compact');
+      }
     }
   }, { passive: true });
 })();
