@@ -22,6 +22,12 @@
   gap: 0.4em;
 }
 
+.section-title.highlight {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  transition: color 0.4s ease, border-bottom-color 0.4s ease;
+}
+
 .section-title-count {
   font-size: 0.75em;
   color: var(--text-secondary);
@@ -363,10 +369,23 @@
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.code-toolbar-btn:hover {
+.code-toolbar-btn:hover:not(:disabled) {
   color: var(--primary-color);
   border-color: var(--primary-color);
   background: rgba(248, 152, 32, 0.08);
+}
+
+.code-toolbar-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.code-toolbar-spacer {
+  flex: 1;
+}
+
+.code-nav-btn {
+  font-weight: 600;
 }
 
 /* Search filter */
@@ -615,6 +634,111 @@
   50% { transform: scale(1.3); }
 }
 
+/* Keyboard shortcuts modal */
+.shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.shortcuts-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.shortcuts-modal {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  transform: scale(0.95) translateY(8px);
+  transition: transform 0.2s ease;
+}
+
+.shortcuts-overlay.visible .shortcuts-modal {
+  transform: scale(1) translateY(0);
+}
+
+.shortcuts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1em 1.2em;
+  border-bottom: 1px solid #21262d;
+}
+
+.shortcuts-title {
+  margin: 0;
+  font-size: 1em;
+  font-weight: 600;
+  color: #e6edf3;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.shortcuts-title .material-icons {
+  font-size: 20px;
+  color: var(--primary-color);
+}
+
+.shortcuts-close {
+  background: none;
+  border: none;
+  color: #7d8590;
+  cursor: pointer;
+  padding: 0.2em;
+  border-radius: 6px;
+  display: flex;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.shortcuts-close:hover {
+  color: #e6edf3;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.shortcuts-body {
+  padding: 0.8em 1.2em 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4em 0;
+}
+
+.shortcut-row kbd {
+  background: #21262d;
+  color: #b0bec5;
+  padding: 0.15em 0.5em;
+  border-radius: 5px;
+  border: 1px solid #30363d;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  min-width: 2em;
+  text-align: center;
+}
+
+.shortcut-row span {
+  color: #7d8590;
+  font-size: 0.9em;
+}
+
 /* Print styles */
 @media print {
   .banner,
@@ -623,7 +747,8 @@
   .theme-toggle,
   .code-toolbar,
   .section-toggle-btn,
-  .section-topic-arrow {
+  .section-topic-arrow,
+  .shortcuts-overlay {
     display: none !important;
   }
 

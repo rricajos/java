@@ -144,6 +144,9 @@ var completedSections = {};
 
 function updateSectionProgress() {
   var read = getReadTopics();
+  var globalTotal = 0;
+  var globalRead = 0;
+
   document.querySelectorAll('.section').forEach(function (section) {
     var topics = section.querySelectorAll('.section-topic');
     var total = topics.length;
@@ -151,6 +154,9 @@ function updateSectionProgress() {
     topics.forEach(function (t) {
       if (read.indexOf(t.dataset.topic) !== -1) readCount++;
     });
+
+    globalTotal += total;
+    globalRead += readCount;
 
     var progressEl = section.querySelector('.section-progress');
     if (!progressEl) return;
@@ -170,6 +176,18 @@ function updateSectionProgress() {
       completedSections[sectionId] = false;
     }
   });
+
+  // Update global progress badge in banner
+  var globalEl = document.getElementById('globalProgress');
+  if (globalEl && globalTotal > 0) {
+    var pct = Math.round((globalRead / globalTotal) * 100);
+    globalEl.textContent = pct + ' % leído';
+    if (pct === 100) {
+      globalEl.classList.add('complete');
+    } else {
+      globalEl.classList.remove('complete');
+    }
+  }
 }
 
 function showCelebration(sectionName) {
@@ -300,10 +318,50 @@ function renderCode(contentEl, code) {
     showToast('download', fileName + ' descargado');
   });
 
+  // Prev/Next navigation buttons
+  var allTopics = Array.prototype.slice.call(
+    document.querySelectorAll('.section-topic:not(.filtered-out)')
+  );
+  var currentTopic = contentEl.closest('.section-topic');
+  var currentIdx = allTopics.indexOf(currentTopic);
+
+  var prevBtn = document.createElement('button');
+  prevBtn.className = 'code-toolbar-btn code-nav-btn';
+  prevBtn.innerHTML = '<i class="material-icons" style="font-size:16px">navigate_before</i> Prev';
+  prevBtn.disabled = currentIdx <= 0;
+  prevBtn.addEventListener('click', function () {
+    if (currentIdx > 0) {
+      var prevTopic = allTopics[currentIdx - 1];
+      toggleTopic(currentTopic.querySelector('.section-topic-header'));
+      var prevHeader = prevTopic.querySelector('.section-topic-header');
+      if (prevHeader) toggleTopic(prevHeader);
+    }
+  });
+
+  var nextBtn = document.createElement('button');
+  nextBtn.className = 'code-toolbar-btn code-nav-btn';
+  nextBtn.innerHTML = 'Next <i class="material-icons" style="font-size:16px">navigate_next</i>';
+  nextBtn.disabled = currentIdx >= allTopics.length - 1;
+  nextBtn.addEventListener('click', function () {
+    if (currentIdx < allTopics.length - 1) {
+      var nextTopic = allTopics[currentIdx + 1];
+      toggleTopic(currentTopic.querySelector('.section-topic-header'));
+      var nextHeader = nextTopic.querySelector('.section-topic-header');
+      if (nextHeader) toggleTopic(nextHeader);
+    }
+  });
+
   toolbar.appendChild(copyBtn);
   toolbar.appendChild(wrapBtn);
   toolbar.appendChild(shareBtn);
   toolbar.appendChild(dlBtn);
+
+  var navSpacer = document.createElement('span');
+  navSpacer.className = 'code-toolbar-spacer';
+  toolbar.appendChild(navSpacer);
+  toolbar.appendChild(prevBtn);
+  toolbar.appendChild(nextBtn);
+
   contentEl.appendChild(toolbar);
 
   // Render code lines with line numbers
@@ -766,6 +824,13 @@ document.addEventListener('keydown', function (event) {
     document.getElementById('query').focus();
   }
 
+  // ? — toggle keyboard shortcuts modal
+  if (event.key === '?' && !isInput) {
+    var overlay = document.getElementById('shortcutsOverlay');
+    if (overlay) overlay.classList.toggle('visible');
+    return;
+  }
+
   // J/K navigation between topics
   if (!isInput && (event.key === 'j' || event.key === 'k')) {
     var allTopics = Array.prototype.slice.call(
@@ -801,6 +866,26 @@ document.addEventListener('keydown', function (event) {
     if (header) toggleTopic(header);
   }
 });
+
+// ============================================================
+// SHORTCUTS MODAL — close button & overlay click
+// ============================================================
+
+(function () {
+  var overlay = document.getElementById('shortcutsOverlay');
+  var closeBtn = document.getElementById('shortcutsClose');
+  if (!overlay) return;
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function () {
+      overlay.classList.remove('visible');
+    });
+  }
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) overlay.classList.remove('visible');
+  });
+})();
 
 // ============================================================
 // THEME TOGGLE (dark / light)
@@ -863,6 +948,28 @@ document.addEventListener('keydown', function (event) {
 })();
 
 // ============================================================
+// PREFETCH CODE ON TOPIC HOVER
+// ============================================================
+
+(function () {
+  document.querySelectorAll('.section-topic-header').forEach(function (header) {
+    header.addEventListener('mouseenter', function () {
+      var topicEl = header.closest('.section-topic');
+      if (!topicEl) return;
+      var topicName = topicEl.dataset.topic;
+      var src = topicPaths[topicName];
+      if (!src || codeCache[topicName]) return;
+
+      fetch(src).then(function (response) {
+        if (response.ok) return response.text();
+      }).then(function (code) {
+        if (code) codeCache[topicName] = code;
+      }).catch(function () {});
+    }, { passive: true });
+  });
+})();
+
+// ============================================================
 // TOPIC CARD ENTRANCE ANIMATION (IntersectionObserver)
 // ============================================================
 
@@ -886,6 +993,31 @@ document.addEventListener('keydown', function (event) {
   cards.forEach(function (card, i) {
     card.style.transitionDelay = (i % 6) * 0.04 + 's';
     observer.observe(card);
+  });
+})();
+
+// ============================================================
+// SECTION TITLE HIGHLIGHT ON SCROLL INTO VIEW
+// ============================================================
+
+(function () {
+  var titles = document.querySelectorAll('.section-title');
+  if (!('IntersectionObserver' in window) || titles.length === 0) return;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('highlight');
+        observer.unobserve(entry.target);
+        setTimeout(function () {
+          entry.target.classList.remove('highlight');
+        }, 1200);
+      }
+    });
+  }, { threshold: 0.8, rootMargin: '0px 0px -60px 0px' });
+
+  titles.forEach(function (title) {
+    observer.observe(title);
   });
 })();
 

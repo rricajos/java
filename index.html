@@ -62,6 +62,7 @@
         <span class="banner-dot">&middot;</span>
         <span>basics &rarr; geek</span>
         <span class="banner-java-badge">Java 21+</span>
+        <span class="banner-progress-badge" id="globalProgress">0 % leído</span>
       </div>
     </div>
 
@@ -571,6 +572,7 @@
         <span class="footer-shortcut"><kbd>J</kbd> / <kbd>K</kbd> Navegar topics</span>
         <span class="footer-shortcut"><kbd>Esc</kbd> Cerrar</span>
         <span class="footer-shortcut"><kbd>Ctrl+K</kbd> Buscar</span>
+        <span class="footer-shortcut"><kbd>?</kbd> Ayuda</span>
       </div>
       <div class="footer-links">
         <a href="https://github.com/rricajos/java" target="_blank">GitHub</a>
@@ -581,6 +583,24 @@
       </div>
     </div>
   </footer>
+
+  <!-- Keyboard shortcuts modal -->
+  <div class="shortcuts-overlay" id="shortcutsOverlay">
+    <div class="shortcuts-modal">
+      <div class="shortcuts-header">
+        <h3 class="shortcuts-title"><i class="material-icons">keyboard</i> Atajos de teclado</h3>
+        <button class="shortcuts-close" id="shortcutsClose"><i class="material-icons">close</i></button>
+      </div>
+      <div class="shortcuts-body">
+        <div class="shortcut-row"><kbd>?</kbd><span>Abrir / cerrar esta ayuda</span></div>
+        <div class="shortcut-row"><kbd>Esc</kbd><span>Cerrar todos los topics</span></div>
+        <div class="shortcut-row"><kbd>Ctrl+K</kbd><span>Enfocar búsqueda</span></div>
+        <div class="shortcut-row"><kbd>/</kbd><span>Enfocar búsqueda</span></div>
+        <div class="shortcut-row"><kbd>J</kbd><span>Siguiente topic</span></div>
+        <div class="shortcut-row"><kbd>K</kbd><span>Topic anterior</span></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Toast container -->
   <div class="toast-container" id="toastContainer"></div>
