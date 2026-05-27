@@ -33,8 +33,17 @@
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.cube:hover {
+.cube:hover,
+.cube.active {
   transform: translateY(-3px);
+}
+
+.cube.active .cube-top-side {
+  box-shadow: 0 0 12px rgba(248, 152, 32, 0.4);
+}
+
+.cube.active .cube-info-title {
+  color: var(--primary-color);
 }
 
 .cube:focus-visible {
@@ -126,5 +135,31 @@
 
   .cube-container {
     height: 130px;
+  }
+
+  .cube-info {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  #super-cubes-container {
+    padding: 0.8em 0 0.5em;
+  }
+
+  .cube {
+    width: auto;
+    margin: 3px;
+  }
+
+  .cube-container {
+    height: 80px;
+  }
+
+  .cube-side {
+    height: 45px;
+    width: 45px;
+    line-height: 45px;
+    font-size: 11px;
   }
 }

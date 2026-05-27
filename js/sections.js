@@ -140,6 +140,8 @@ function updateReadBadge(topicName) {
   titleEl.appendChild(badge);
 }
 
+var completedSections = {};
+
 function updateSectionProgress() {
   var read = getReadTopics();
   document.querySelectorAll('.section').forEach(function (section) {
@@ -153,12 +155,35 @@ function updateSectionProgress() {
     var progressEl = section.querySelector('.section-progress');
     if (!progressEl) return;
     progressEl.textContent = readCount + '/' + total;
+
+    var sectionId = section.id;
     if (readCount === total) {
       progressEl.classList.add('complete');
+      // Fire celebration if this section just became complete
+      if (!completedSections[sectionId]) {
+        completedSections[sectionId] = true;
+        var sectionName = section.querySelector('.section-title').childNodes[0].textContent.trim();
+        showCelebration(sectionName);
+      }
     } else {
       progressEl.classList.remove('complete');
+      completedSections[sectionId] = false;
     }
   });
+}
+
+function showCelebration(sectionName) {
+  var container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  var toast = document.createElement('div');
+  toast.className = 'toast celebration';
+  toast.innerHTML = '<i class="material-icons">emoji_events</i> ' + sectionName + ' completado!';
+  container.appendChild(toast);
+
+  setTimeout(function () {
+    if (toast.parentNode) toast.parentNode.removeChild(toast);
+  }, 3500);
 }
 
 /**
@@ -257,9 +282,28 @@ function renderCode(contentEl, code) {
     });
   });
 
+  // Download .java file button
+  var dlBtn = document.createElement('button');
+  dlBtn.className = 'code-toolbar-btn';
+  dlBtn.innerHTML = '<i class="material-icons" style="font-size:16px">download</i> .java';
+  dlBtn.addEventListener('click', function () {
+    var topicEl = contentEl.closest('.section-topic');
+    var topicName = topicEl ? topicEl.dataset.topic : 'code';
+    var fileName = topicPaths[topicName] ? topicPaths[topicName].split('/').pop() : topicName + '.java';
+    var blob = new Blob([code], { type: 'text/x-java' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('download', fileName + ' descargado');
+  });
+
   toolbar.appendChild(copyBtn);
   toolbar.appendChild(wrapBtn);
   toolbar.appendChild(shareBtn);
+  toolbar.appendChild(dlBtn);
   contentEl.appendChild(toolbar);
 
   // Render code lines with line numbers
@@ -595,6 +639,27 @@ function filterTopics(query) {
         nav.classList.remove('compact');
       }
     }
+
+    // Scroll spy — highlight active section cube
+    var sections = document.querySelectorAll('.section');
+    var cubes = document.querySelectorAll('.cube');
+    var activeIdx = -1;
+    var offset = 150;
+
+    sections.forEach(function (section, i) {
+      var rect = section.getBoundingClientRect();
+      if (rect.top <= offset && rect.bottom > offset) {
+        activeIdx = i;
+      }
+    });
+
+    cubes.forEach(function (cube, i) {
+      if (i === activeIdx) {
+        cube.classList.add('active');
+      } else {
+        cube.classList.remove('active');
+      }
+    });
   }, { passive: true });
 })();
 
@@ -663,6 +728,20 @@ function filterTopics(query) {
   read.forEach(function (topicName) {
     updateReadBadge(topicName);
   });
+
+  // Pre-mark already-complete sections so they don't trigger celebration on load
+  document.querySelectorAll('.section').forEach(function (section) {
+    var topics = section.querySelectorAll('.section-topic');
+    var total = topics.length;
+    var readCount = 0;
+    topics.forEach(function (t) {
+      if (read.indexOf(t.dataset.topic) !== -1) readCount++;
+    });
+    if (readCount === total) {
+      completedSections[section.id] = true;
+    }
+  });
+
   updateSectionProgress();
 })();
 
@@ -750,6 +829,37 @@ document.addEventListener('keydown', function (event) {
     document.documentElement.setAttribute('data-theme', t);
     icon.textContent = t === 'dark' ? 'light_mode' : 'dark_mode';
   }
+})();
+
+// ============================================================
+// RESET PROGRESS
+// ============================================================
+
+(function () {
+  var btn = document.getElementById('resetProgressBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', function () {
+    var read = getReadTopics();
+    if (read.length === 0) {
+      showToast('info', 'No hay progreso que reiniciar');
+      return;
+    }
+
+    if (!confirm('¿Reiniciar el progreso de lectura? (' + read.length + ' topics leídos)')) return;
+
+    localStorage.removeItem('sjb-read-topics');
+
+    // Remove all read badges
+    document.querySelectorAll('.topic-read-badge').forEach(function (b) {
+      b.parentNode.removeChild(b);
+    });
+
+    // Reset progress counters
+    updateSectionProgress();
+
+    showToast('restart_alt', 'Progreso reiniciado');
+  });
 })();
 
 // ============================================================

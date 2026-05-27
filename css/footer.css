@@ -64,6 +64,26 @@
   color: var(--primary-color);
 }
 
+.footer-reset-btn {
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #656d76;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.2em 0.6em;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.footer-reset-btn:hover {
+  color: #f85149;
+  border-color: #f85149;
+}
+
 @media screen and (max-width: 600px) {
   .footer-shortcuts {
     flex-direction: column;
