@@ -72,7 +72,64 @@ function toggleTopic(headerEl) {
     if (!contentEl.dataset.loaded) {
       loadTopicCode(topicEl.dataset.topic, contentEl);
     }
+
+    // Mark topic as read
+    markTopicRead(topicEl.dataset.topic);
   }
+}
+
+/**
+ * Progress tracking: mark a topic as read in localStorage
+ */
+function markTopicRead(topicName) {
+  var read = getReadTopics();
+  if (read.indexOf(topicName) === -1) {
+    read.push(topicName);
+    localStorage.setItem('sjb-read-topics', JSON.stringify(read));
+    updateReadBadge(topicName);
+    updateSectionProgress();
+  }
+}
+
+function getReadTopics() {
+  try {
+    return JSON.parse(localStorage.getItem('sjb-read-topics')) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function updateReadBadge(topicName) {
+  var topicEl = document.querySelector('.section-topic[data-topic="' + topicName + '"]');
+  if (!topicEl || topicEl.querySelector('.topic-read-badge')) return;
+
+  var titleEl = topicEl.querySelector('.section-topic-title');
+  var badge = document.createElement('i');
+  badge.className = 'material-icons topic-read-badge';
+  badge.textContent = 'check_circle';
+  badge.title = 'Leído';
+  titleEl.appendChild(badge);
+}
+
+function updateSectionProgress() {
+  var read = getReadTopics();
+  document.querySelectorAll('.section').forEach(function (section) {
+    var topics = section.querySelectorAll('.section-topic');
+    var total = topics.length;
+    var readCount = 0;
+    topics.forEach(function (t) {
+      if (read.indexOf(t.dataset.topic) !== -1) readCount++;
+    });
+
+    var progressEl = section.querySelector('.section-progress');
+    if (!progressEl) return;
+    progressEl.textContent = readCount + '/' + total;
+    if (readCount === total) {
+      progressEl.classList.add('complete');
+    } else {
+      progressEl.classList.remove('complete');
+    }
+  });
 }
 
 /**
@@ -142,6 +199,8 @@ function renderCode(contentEl, code) {
   var codeTable = document.createElement('div');
   codeTable.className = 'code-lines';
 
+  var inBlockComment = false;
+
   lines.forEach(function (line, index) {
     var row = document.createElement('div');
     row.className = 'code-line';
@@ -156,14 +215,52 @@ function renderCode(contentEl, code) {
     var content = document.createElement('span');
     content.className = 'code-line-content';
 
-    if (/^\/\/\/{3,}/.test(line.trim())) {
+    if (inBlockComment) {
+      // Inside a multi-line block comment
+      var endIdx = line.indexOf('*/');
+      if (endIdx !== -1) {
+        inBlockComment = false;
+        var commentText = line.substring(0, endIdx + 2);
+        var restText = line.substring(endIdx + 2);
+        if (restText.trim()) {
+          content.innerHTML = '<span class="code-comment">' + escapeHtml(commentText) + '</span>' + highlightLine(restText);
+        } else {
+          content.className += ' code-comment';
+          content.textContent = line;
+        }
+      } else {
+        content.className += ' code-comment';
+        content.textContent = line;
+      }
+    } else if (/^\/\/\/{3,}/.test(line.trim())) {
       content.className += ' code-separator';
       content.textContent = line;
     } else if (/^\s*\/\//.test(line)) {
       content.className += ' code-comment';
       content.textContent = line;
     } else {
-      content.innerHTML = highlightLine(line);
+      // Check for block comment start
+      var bcStart = findBlockCommentStart(line);
+      if (bcStart !== -1) {
+        var bcEnd = line.indexOf('*/', bcStart + 2);
+        if (bcEnd !== -1) {
+          // Single-line block comment /* ... */ — highlightLine handles it
+          content.innerHTML = highlightLine(line);
+        } else {
+          // Multi-line block comment starts here
+          inBlockComment = true;
+          var codeBefore = line.substring(0, bcStart);
+          var commentAfter = line.substring(bcStart);
+          if (codeBefore.trim()) {
+            content.innerHTML = highlightLine(codeBefore) + '<span class="code-comment">' + escapeHtml(commentAfter) + '</span>';
+          } else {
+            content.className += ' code-comment';
+            content.textContent = line;
+          }
+        }
+      } else {
+        content.innerHTML = highlightLine(line);
+      }
     }
 
     row.appendChild(content);
@@ -175,17 +272,49 @@ function renderCode(contentEl, code) {
 }
 
 /**
+ * Escape HTML special characters
+ */
+function escapeHtml(text) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/**
+ * Find the start index of a block comment (/*) outside strings
+ */
+function findBlockCommentStart(line) {
+  var inString = false;
+  var stringChar = '';
+
+  for (var i = 0; i < line.length - 1; i++) {
+    var ch = line[i];
+    var nx = line[i + 1];
+
+    if (inString) {
+      if (ch === '\\') { i++; continue; }
+      if (ch === stringChar) { inString = false; }
+    } else {
+      if (ch === '"' || ch === "'") {
+        inString = true;
+        stringChar = ch;
+      } else if (ch === '/' && nx === '/') {
+        return -1; // line comment comes first
+      } else if (ch === '/' && nx === '*') {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+/**
  * Java syntax highlighting for a single line
  */
 function highlightLine(line) {
   if (!line.trim()) return '\n';
 
-  var html = line
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  var html = escapeHtml(line);
 
-  // Inline comments
+  // Inline comments (//)
   var commentIndex = findCommentIndex(html);
   var codePart = html;
   var commentPart = '';
@@ -194,6 +323,12 @@ function highlightLine(line) {
     codePart = html.substring(0, commentIndex);
     commentPart = '<span class="code-comment">' + html.substring(commentIndex) + '</span>';
   }
+
+  // Single-line block comments (/* ... */)
+  codePart = codePart.replace(
+    /\/\*[\s\S]*?\*\//g,
+    '<span class="code-comment">$&</span>'
+  );
 
   // Strings
   codePart = codePart.replace(
@@ -267,14 +402,24 @@ function search() {
   smoothScrollToTop();
   var query = document.getElementById("query").value;
   var banner = document.getElementById("banner");
+  var clearBtn = document.getElementById("searchClearBtn");
 
   if (query !== "") {
     banner.style.height = "0px";
+    if (clearBtn) clearBtn.classList.add('visible');
   } else {
     banner.style.height = "180px";
+    if (clearBtn) clearBtn.classList.remove('visible');
   }
 
   filterTopics(query);
+}
+
+function clearSearch() {
+  var input = document.getElementById("query");
+  input.value = "";
+  input.focus();
+  search();
 }
 
 function filterTopics(query) {
@@ -357,6 +502,12 @@ function filterTopics(query) {
     badge.textContent = '(' + count + ' topics)';
     title.appendChild(badge);
 
+    // Progress counter
+    var progress = document.createElement('span');
+    progress.className = 'section-progress';
+    progress.textContent = '0/' + count;
+    title.appendChild(progress);
+
     // Expand/collapse all button
     var toggleBtn = document.createElement('button');
     toggleBtn.className = 'section-toggle-btn';
@@ -379,6 +530,7 @@ function filterTopics(query) {
           if (contentEl && !contentEl.dataset.loaded) {
             loadTopicCode(topic.dataset.topic, contentEl);
           }
+          markTopicRead(topic.dataset.topic);
         }
       });
 
@@ -387,6 +539,18 @@ function filterTopics(query) {
 
     title.appendChild(toggleBtn);
   });
+})();
+
+// ============================================================
+// RESTORE READ PROGRESS
+// ============================================================
+
+(function () {
+  var read = getReadTopics();
+  read.forEach(function (topicName) {
+    updateReadBadge(topicName);
+  });
+  updateSectionProgress();
 })();
 
 // ============================================================

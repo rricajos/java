@@ -55,3 +55,31 @@
 .search-box-form-submit-icon {
   color: #fff;
 }
+
+.search-box-clear-btn {
+  position: absolute;
+  right: 52px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0.2em;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.search-box-clear-btn .material-icons {
+  font-size: 20px;
+}
+
+.search-box-clear-btn:hover {
+  color: var(--primary-color);
+}
+
+.search-box-clear-btn.visible {
+  display: flex;
+}

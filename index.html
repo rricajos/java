@@ -16,6 +16,9 @@
     content="SJB - A pure Java handbook with syntax-highlighted code examples organized by difficulty level" />
   <meta name="theme-color" content="#1e1e1e">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/banner.css">
@@ -26,6 +29,9 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="canonical" href="https://rricajos.github.io/java/" />
+
+  <script src="js/banner.js" defer></script>
+  <script src="js/sections.js" defer></script>
 </head>
 
 <body>
@@ -55,6 +61,9 @@
     <form class="search-box-form">
       <input class="search-box-form-input" type="text" id="query" name="query" placeholder="Java ToolBox"
         autocomplete="off" oninput="search()">
+      <button type="button" class="search-box-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Limpiar búsqueda">
+        <i class="material-icons">close</i>
+      </button>
       <div class="search-box-form-submit" onclick="search()">
         <i class="search-box-form-submit-icon material-icons">search</i>
       </div>
@@ -63,7 +72,7 @@
 
     <div id="super-cubes-container">
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-basics')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-basics')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-basics')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Basics</div>
           <div class="cube-side cube-left-side">Basics</div>
@@ -79,7 +88,7 @@
         </div>
       </div>
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-good')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-good')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-good')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Good</div>
           <div class="cube-side cube-left-side">Good</div>
@@ -95,7 +104,7 @@
         </div>
       </div>
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-pro')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-pro')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-pro')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Pro</div>
           <div class="cube-side cube-left-side">Pro</div>
@@ -111,7 +120,7 @@
         </div>
       </div>
 
-      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-geek')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-geek')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-geek')}">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Geek</div>
           <div class="cube-side cube-left-side">Geek</div>
@@ -548,8 +557,7 @@
     <i class="material-icons">keyboard_arrow_up</i>
   </button>
 
-  <script src="js/banner.js"></script>
-  <script src="js/sections.js"></script>
+
 </body>
 
 </html>

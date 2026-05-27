@@ -27,6 +27,27 @@
   font-weight: normal;
 }
 
+.section-progress {
+  font-family: system-ui, sans-serif;
+  font-size: 0.5em;
+  color: var(--white-second-color);
+  font-weight: normal;
+  background: var(--border-color);
+  padding: 0.1em 0.5em;
+  border-radius: 0.8em;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.section-progress.complete {
+  color: #fff;
+  background: #4caf50;
+}
+
+.topic-read-badge {
+  color: #4caf50;
+  font-size: 0.7em !important;
+}
+
 .section-toggle-btn {
   margin-left: auto;
   background: none;
