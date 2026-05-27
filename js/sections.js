@@ -64,8 +64,10 @@ function toggleTopic(headerEl) {
 
   if (isOpen) {
     topicEl.classList.remove('open');
+    headerEl.setAttribute('aria-expanded', 'false');
   } else {
     topicEl.classList.add('open');
+    headerEl.setAttribute('aria-expanded', 'true');
 
     if (!contentEl.dataset.loaded) {
       loadTopicCode(topicEl.dataset.topic, contentEl);
@@ -85,7 +87,7 @@ function loadTopicCode(topicName, contentEl) {
   }
 
   contentEl.classList.add('loading');
-  contentEl.textContent = 'Loading...';
+  contentEl.innerHTML = '';
 
   if (codeCache[topicName]) {
     renderCode(contentEl, codeCache[topicName]);
@@ -267,12 +269,15 @@ function search() {
 function filterTopics(query) {
   var normalizedQuery = query.toLowerCase().trim();
   var sections = document.querySelectorAll('.section');
+  var totalVisible = 0;
+  var totalTopics = 0;
 
   sections.forEach(function (section) {
     var topics = section.querySelectorAll('.section-topic');
     var visibleTopics = 0;
 
     topics.forEach(function (topic) {
+      totalTopics++;
       var title = topic.querySelector('.section-topic-title').textContent.toLowerCase();
       var desc = topic.querySelector('.section-topic-desc').textContent.toLowerCase();
       var topicName = topic.dataset.topic.toLowerCase().replace(/_/g, ' ');
@@ -285,6 +290,7 @@ function filterTopics(query) {
       if (matches) {
         topic.classList.remove('filtered-out');
         visibleTopics++;
+        totalVisible++;
       } else {
         topic.classList.add('filtered-out');
       }
@@ -296,6 +302,14 @@ function filterTopics(query) {
       section.classList.remove('filtered-out');
     }
   });
+
+  // Update search results count
+  var countEl = document.getElementById('searchResultsCount');
+  if (countEl) {
+    countEl.textContent = normalizedQuery
+      ? totalVisible + ' de ' + totalTopics + ' resultados'
+      : '';
+  }
 }
 
 // ============================================================
@@ -348,3 +362,32 @@ document.addEventListener('keydown', function (event) {
     document.getElementById('query').focus();
   }
 });
+
+// ============================================================
+// THEME TOGGLE (dark / light)
+// ============================================================
+
+(function () {
+  var toggle = document.getElementById('themeToggle');
+  var icon = document.getElementById('themeIcon');
+  if (!toggle) return;
+
+  // Determine initial theme: localStorage > system preference > light
+  var saved = localStorage.getItem('sjb-theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var theme = saved || (prefersDark ? 'dark' : 'light');
+
+  applyTheme(theme);
+
+  toggle.addEventListener('click', function () {
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    var next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('sjb-theme', next);
+  });
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    icon.textContent = t === 'dark' ? 'light_mode' : 'dark_mode';
+  }
+})();

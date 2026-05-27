@@ -14,6 +14,7 @@
   <meta property="og:title" content="Super Java Brain" />
   <meta property="og:description"
     content="SJB - A pure Java handbook with syntax-highlighted code examples organized by difficulty level" />
+  <meta name="theme-color" content="#1e1e1e">
 
   <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
   <link rel="stylesheet" href="css/main.css">
@@ -21,12 +22,18 @@
   <link rel="stylesheet" href="css/search-box.css">
   <link rel="stylesheet" href="css/cubes.css">
   <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/footer.css">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="canonical" href="https://rricajos.github.io/java/" />
 </head>
 
 <body>
+
+  <!-- Theme toggle -->
+  <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
+    <i class="material-icons" id="themeIcon">dark_mode</i>
+  </button>
 
   <!-- Banner -->
   <header class="banner" id="banner">
@@ -52,10 +59,11 @@
         <i class="search-box-form-submit-icon material-icons">search</i>
       </div>
     </form>
+    <div class="search-results-count" id="searchResultsCount"></div>
 
     <div id="super-cubes-container">
 
-      <div class="cube" onclick="scrollToSection('section-basics')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-basics')">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Basics</div>
           <div class="cube-side cube-left-side">Basics</div>
@@ -71,7 +79,7 @@
         </div>
       </div>
 
-      <div class="cube" onclick="scrollToSection('section-good')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-good')">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Good</div>
           <div class="cube-side cube-left-side">Good</div>
@@ -87,7 +95,7 @@
         </div>
       </div>
 
-      <div class="cube" onclick="scrollToSection('section-pro')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-pro')">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Pro</div>
           <div class="cube-side cube-left-side">Pro</div>
@@ -103,7 +111,7 @@
         </div>
       </div>
 
-      <div class="cube" onclick="scrollToSection('section-geek')">
+      <div class="cube" role="button" tabindex="0" onclick="scrollToSection('section-geek')">
         <div class="cube-container">
           <div class="cube-side cube-top-side">Geek</div>
           <div class="cube-side cube-left-side">Geek</div>
@@ -130,7 +138,7 @@
       <h2 class="section-title">Common Basics</h2>
 
       <div class="section-topic" data-topic="variables_and_types">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">code</i>
             Variables & Types
@@ -142,7 +150,7 @@
       </div>
 
       <div class="section-topic" data-topic="operators_arithmetic">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">calculate</i>
             Arithmetic Operators
@@ -154,7 +162,7 @@
       </div>
 
       <div class="section-topic" data-topic="operators_assignment">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">assignment</i>
             Assignment Operators
@@ -166,7 +174,7 @@
       </div>
 
       <div class="section-topic" data-topic="operators_logical">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">rule</i>
             Logical & Comparison
@@ -178,7 +186,7 @@
       </div>
 
       <div class="section-topic" data-topic="operators_conditional">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">help_outline</i>
             Conditional & Switch
@@ -190,7 +198,7 @@
       </div>
 
       <div class="section-topic" data-topic="control_flow">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">alt_route</i>
             Control Flow
@@ -202,7 +210,7 @@
       </div>
 
       <div class="section-topic" data-topic="datetime_api">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">schedule</i>
             Date & Time API
@@ -214,7 +222,7 @@
       </div>
 
       <div class="section-topic" data-topic="packages_and_access">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">lock</i>
             Packages & Access Modifiers
@@ -231,7 +239,7 @@
       <h2 class="section-title">Good Skills</h2>
 
       <div class="section-topic" data-topic="methods">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">functions</i>
             Methods
@@ -243,7 +251,7 @@
       </div>
 
       <div class="section-topic" data-topic="strings">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">text_fields</i>
             Strings
@@ -255,7 +263,7 @@
       </div>
 
       <div class="section-topic" data-topic="arrays">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">view_list</i>
             Arrays
@@ -267,7 +275,7 @@
       </div>
 
       <div class="section-topic" data-topic="optional">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">help_center</i>
             Optional
@@ -279,7 +287,7 @@
       </div>
 
       <div class="section-topic" data-topic="inner_classes">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">layers</i>
             Inner Classes
@@ -291,7 +299,7 @@
       </div>
 
       <div class="section-topic" data-topic="regex">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">manage_search</i>
             Regex
@@ -308,7 +316,7 @@
       <h2 class="section-title">Like a Pro</h2>
 
       <div class="section-topic" data-topic="oop_classes">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">account_tree</i>
             OOP & Classes
@@ -320,7 +328,7 @@
       </div>
 
       <div class="section-topic" data-topic="oop_inheritance">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">share</i>
             Inheritance & Polymorphism
@@ -332,7 +340,7 @@
       </div>
 
       <div class="section-topic" data-topic="exceptions">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">bug_report</i>
             Exception Handling
@@ -344,7 +352,7 @@
       </div>
 
       <div class="section-topic" data-topic="collections">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">data_object</i>
             Collections Framework
@@ -356,7 +364,7 @@
       </div>
 
       <div class="section-topic" data-topic="annotations">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">label</i>
             Annotations
@@ -368,7 +376,7 @@
       </div>
 
       <div class="section-topic" data-topic="jdbc">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">storage</i>
             JDBC
@@ -380,7 +388,7 @@
       </div>
 
       <div class="section-topic" data-topic="junit">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">check_circle</i>
             JUnit 5
@@ -392,7 +400,7 @@
       </div>
 
       <div class="section-topic" data-topic="design_patterns">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">architecture</i>
             Design Patterns
@@ -404,7 +412,7 @@
       </div>
 
       <div class="section-topic" data-topic="build_tools">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">build</i>
             Maven & Gradle
@@ -421,7 +429,7 @@
       <h2 class="section-title">Geek for Geeks</h2>
 
       <div class="section-topic" data-topic="generics">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">tune</i>
             Generics
@@ -433,7 +441,7 @@
       </div>
 
       <div class="section-topic" data-topic="lambdas_and_functional">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">bolt</i>
             Lambdas & Functional
@@ -445,7 +453,7 @@
       </div>
 
       <div class="section-topic" data-topic="streams">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">water</i>
             Streams API
@@ -457,7 +465,7 @@
       </div>
 
       <div class="section-topic" data-topic="concurrency">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">sync</i>
             Concurrency
@@ -469,7 +477,7 @@
       </div>
 
       <div class="section-topic" data-topic="file_io">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">folder_open</i>
             File I/O
@@ -481,7 +489,7 @@
       </div>
 
       <div class="section-topic" data-topic="networking">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">public</i>
             Networking
@@ -493,7 +501,7 @@
       </div>
 
       <div class="section-topic" data-topic="reflection">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">visibility</i>
             Reflection
@@ -505,7 +513,7 @@
       </div>
 
       <div class="section-topic" data-topic="modules">
-        <div class="section-topic-header" onclick="toggleTopic(this)">
+        <div class="section-topic-header" onclick="toggleTopic(this)" aria-expanded="false">
           <h3 class="section-topic-title">
             <i class="material-icons section-topic-icon">extension</i>
             Modules (JPMS)
@@ -518,6 +526,22 @@
     </section>
 
   </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <span class="footer-brand">Super Java Brain &middot; 31 topics &middot; 4 levels</span>
+      <div class="footer-shortcuts">
+        <span class="footer-shortcut"><kbd>Esc</kbd> Cerrar topics</span>
+        <span class="footer-shortcut"><kbd>Ctrl+K</kbd> Buscar</span>
+        <span class="footer-shortcut"><kbd>/</kbd> Buscar</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/rricajos/java" target="_blank">GitHub</a>
+        <a href="https://docs.oracle.com/en/java/" target="_blank">Oracle Docs</a>
+      </div>
+    </div>
+  </footer>
 
   <!-- Back to top button -->
   <button class="back-to-top" id="backToTop" onclick="smoothScrollToTop()">

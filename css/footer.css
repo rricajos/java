@@ -1,0 +1,69 @@
+.site-footer {
+  background: linear-gradient(135deg, var(--black-second-color) 0%, var(--black-color) 100%);
+  color: var(--white-second-color);
+  padding: 2em 1em;
+  margin-top: 2em;
+  font-family: monospace;
+  font-size: 0.85em;
+  text-align: center;
+}
+
+.footer-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.footer-brand {
+  color: var(--primary-color);
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.footer-shortcuts {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 1.2em;
+}
+
+.footer-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  color: #888;
+}
+
+.footer-shortcut kbd {
+  background: #444;
+  color: var(--white-color);
+  padding: 0.15em 0.5em;
+  border-radius: 0.3em;
+  border: 1px solid #555;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5em;
+}
+
+.footer-links a {
+  color: var(--accent-color);
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
+
+@media screen and (max-width: 600px) {
+  .footer-shortcuts {
+    flex-direction: column;
+    gap: 0.6em;
+  }
+}
