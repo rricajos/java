@@ -140,6 +140,38 @@ function updateReadBadge(topicName) {
   titleEl.appendChild(badge);
 }
 
+/**
+ * Favorites system
+ */
+function getFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem('sjb-favorites')) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function toggleFavorite(topicName) {
+  var favs = getFavorites();
+  var idx = favs.indexOf(topicName);
+  if (idx === -1) {
+    favs.push(topicName);
+  } else {
+    favs.splice(idx, 1);
+  }
+  localStorage.setItem('sjb-favorites', JSON.stringify(favs));
+  updateFavCount();
+  return idx === -1; // returns true if added
+}
+
+function updateFavCount() {
+  var el = document.getElementById('favCount');
+  if (el) el.textContent = getFavorites().length;
+}
+
+var favFilterActive = false;
+var activeCategory = 'all';
+
 var completedSections = {};
 
 function updateSectionProgress() {
@@ -440,7 +472,7 @@ function renderCode(contentEl, code) {
   contentEl.appendChild(codeTable);
   contentEl.dataset.loaded = 'true';
 
-  // Add line count badge to the topic description
+  // Add line count + reading time badges to the topic description
   var topicEl = contentEl.closest('.section-topic');
   if (topicEl && !topicEl.querySelector('.topic-lines-badge')) {
     var descEl = topicEl.querySelector('.section-topic-desc');
@@ -450,6 +482,13 @@ function renderCode(contentEl, code) {
       linesBadge.textContent = lines.length + ' lines';
       descEl.appendChild(document.createTextNode(' '));
       descEl.appendChild(linesBadge);
+
+      var readMins = Math.max(1, Math.ceil(lines.length / 25));
+      var timeBadge = document.createElement('span');
+      timeBadge.className = 'topic-lines-badge topic-time-badge';
+      timeBadge.innerHTML = '<i class="material-icons" style="font-size:12px;vertical-align:-2px">schedule</i> ~' + readMins + ' min';
+      descEl.appendChild(document.createTextNode(' '));
+      descEl.appendChild(timeBadge);
     }
   }
 }
@@ -610,8 +649,11 @@ function filterTopics(query) {
   var sections = document.querySelectorAll('.section');
   var totalVisible = 0;
   var totalTopics = 0;
+  var favs = favFilterActive ? getFavorites() : null;
+  var catFilter = typeof activeCategory !== 'undefined' ? activeCategory : 'all';
 
   sections.forEach(function (section) {
+    var sectionCat = section.dataset.category || '';
     var topics = section.querySelectorAll('.section-topic');
     var visibleTopics = 0;
 
@@ -621,12 +663,15 @@ function filterTopics(query) {
       var desc = topic.querySelector('.section-topic-desc').textContent.toLowerCase();
       var topicName = topic.dataset.topic.toLowerCase().replace(/_/g, ' ');
 
-      var matches = !normalizedQuery ||
+      var matchesText = !normalizedQuery ||
         title.includes(normalizedQuery) ||
         desc.includes(normalizedQuery) ||
         topicName.includes(normalizedQuery);
 
-      if (matches) {
+      var matchesFav = !favs || favs.indexOf(topic.dataset.topic) !== -1;
+      var matchesCat = catFilter === 'all' || sectionCat === catFilter;
+
+      if (matchesText && matchesFav && matchesCat) {
         topic.classList.remove('filtered-out');
         visibleTopics++;
         totalVisible++;
@@ -635,7 +680,7 @@ function filterTopics(query) {
       }
     });
 
-    if (visibleTopics === 0 && normalizedQuery) {
+    if (visibleTopics === 0 && (normalizedQuery || favs || catFilter !== 'all')) {
       section.classList.add('filtered-out');
     } else {
       section.classList.remove('filtered-out');
@@ -811,6 +856,11 @@ document.addEventListener('keydown', function (event) {
   var isInput = document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA';
 
   if (event.key === 'Escape') {
+    // Close shortcuts modal if open
+    if (window._shortcutsModal && window._shortcutsModal.isOpen()) {
+      window._shortcutsModal.close();
+      return;
+    }
     document.querySelectorAll('.section-topic.open').forEach(function (topic) {
       topic.classList.remove('open');
       var h = topic.querySelector('.section-topic-header');
@@ -826,8 +876,13 @@ document.addEventListener('keydown', function (event) {
 
   // ? — toggle keyboard shortcuts modal
   if (event.key === '?' && !isInput) {
-    var overlay = document.getElementById('shortcutsOverlay');
-    if (overlay) overlay.classList.toggle('visible');
+    if (window._shortcutsModal) {
+      if (window._shortcutsModal.isOpen()) {
+        window._shortcutsModal.close();
+      } else {
+        window._shortcutsModal.open();
+      }
+    }
     return;
   }
 
@@ -868,7 +923,7 @@ document.addEventListener('keydown', function (event) {
 });
 
 // ============================================================
-// SHORTCUTS MODAL — close button & overlay click
+// SHORTCUTS MODAL — close button, overlay click, focus trap
 // ============================================================
 
 (function () {
@@ -876,15 +931,53 @@ document.addEventListener('keydown', function (event) {
   var closeBtn = document.getElementById('shortcutsClose');
   if (!overlay) return;
 
+  var previousFocus = null;
+
+  function openModal() {
+    previousFocus = document.activeElement;
+    overlay.classList.add('visible');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.remove('visible');
+    if (previousFocus && previousFocus.focus) previousFocus.focus();
+  }
+
   if (closeBtn) {
-    closeBtn.addEventListener('click', function () {
-      overlay.classList.remove('visible');
-    });
+    closeBtn.addEventListener('click', closeModal);
   }
 
   overlay.addEventListener('click', function (e) {
-    if (e.target === overlay) overlay.classList.remove('visible');
+    if (e.target === overlay) closeModal();
   });
+
+  // Focus trap: Tab/Shift+Tab cycle within modal
+  overlay.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab') return;
+    var focusable = overlay.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+
+  // Expose open/close for keyboard handler
+  window._shortcutsModal = { open: openModal, close: closeModal, isOpen: function () {
+    return overlay.classList.contains('visible');
+  }};
 })();
 
 // ============================================================
@@ -945,6 +1038,152 @@ document.addEventListener('keydown', function (event) {
 
     showToast('restart_alt', 'Progreso reiniciado');
   });
+})();
+
+// ============================================================
+// QUICK-JUMP DROPDOWN (table of contents)
+// ============================================================
+
+(function () {
+  var toggleBtn = document.getElementById('quickjumpToggle');
+  var dropdown = document.getElementById('quickjumpDropdown');
+  if (!toggleBtn || !dropdown) return;
+
+  // Build dropdown content from DOM
+  function buildDropdown() {
+    dropdown.innerHTML = '';
+    var read = getReadTopics();
+
+    document.querySelectorAll('.section').forEach(function (section) {
+      var titleEl = section.querySelector('.section-title');
+      var sectionLabel = titleEl ? titleEl.childNodes[0].textContent.trim() : '';
+
+      var sectionHeader = document.createElement('div');
+      sectionHeader.className = 'quickjump-section';
+      sectionHeader.textContent = sectionLabel;
+      dropdown.appendChild(sectionHeader);
+
+      section.querySelectorAll('.section-topic').forEach(function (topic) {
+        var topicTitle = topic.querySelector('.section-topic-title');
+        var iconEl = topic.querySelector('.section-topic-icon');
+        var iconName = iconEl ? iconEl.textContent : 'code';
+        var name = topicTitle ? topicTitle.childNodes[topicTitle.childNodes.length - 1].textContent.trim() : topic.dataset.topic;
+        // Clean: remove any badge text from the title
+        var titleTexts = [];
+        topicTitle.childNodes.forEach(function (n) {
+          if (n.nodeType === 3 && n.textContent.trim()) titleTexts.push(n.textContent.trim());
+        });
+        if (titleTexts.length > 0) name = titleTexts.join(' ');
+
+        var item = document.createElement('button');
+        item.className = 'quickjump-item';
+        item.innerHTML = '<i class="material-icons">' + iconName + '</i>'
+          + '<span class="quickjump-item-name">' + name + '</span>'
+          + (read.indexOf(topic.dataset.topic) !== -1
+            ? '<i class="material-icons topic-read-check">check_circle</i>'
+            : '');
+
+        item.addEventListener('click', function () {
+          dropdown.classList.remove('visible');
+          // Close any open topics first
+          document.querySelectorAll('.section-topic.open').forEach(function (t) {
+            t.classList.remove('open');
+            var h = t.querySelector('.section-topic-header');
+            if (h) h.setAttribute('aria-expanded', 'false');
+          });
+          // Open this topic
+          var header = topic.querySelector('.section-topic-header');
+          if (header) toggleTopic(header);
+        });
+
+        dropdown.appendChild(item);
+      });
+    });
+  }
+
+  toggleBtn.addEventListener('click', function () {
+    var isVisible = dropdown.classList.contains('visible');
+    if (!isVisible) {
+      buildDropdown(); // Refresh every time it opens
+    }
+    dropdown.classList.toggle('visible');
+  });
+
+  // Close on click outside
+  document.addEventListener('click', function (e) {
+    if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('visible');
+    }
+  });
+})();
+
+// ============================================================
+// CATEGORY CHIPS — filter by difficulty level
+// ============================================================
+
+(function () {
+  var chips = document.querySelectorAll('.category-chip');
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      activeCategory = chip.dataset.cat;
+      filterTopics(document.getElementById('query').value);
+    });
+  });
+})();
+
+// ============================================================
+// FAVORITES — star buttons & filter
+// ============================================================
+
+(function () {
+  var favs = getFavorites();
+
+  // Add star button to each topic header
+  document.querySelectorAll('.section-topic').forEach(function (topic) {
+    var header = topic.querySelector('.section-topic-header');
+    var arrow = header.querySelector('.section-topic-arrow');
+    if (!header || !arrow) return;
+
+    var starBtn = document.createElement('button');
+    starBtn.className = 'topic-fav-btn';
+    starBtn.title = 'Añadir a favoritos';
+    var isFav = favs.indexOf(topic.dataset.topic) !== -1;
+    starBtn.innerHTML = '<i class="material-icons">' + (isFav ? 'star' : 'star_border') + '</i>';
+    if (isFav) starBtn.classList.add('active');
+
+    starBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var added = toggleFavorite(topic.dataset.topic);
+      starBtn.innerHTML = '<i class="material-icons">' + (added ? 'star' : 'star_border') + '</i>';
+      if (added) {
+        starBtn.classList.add('active');
+        showToast('star', 'Añadido a favoritos');
+      } else {
+        starBtn.classList.remove('active');
+        showToast('star_border', 'Eliminado de favoritos');
+        // Re-filter if favorites filter is active
+        if (favFilterActive) {
+          filterTopics(document.getElementById('query').value);
+        }
+      }
+    });
+
+    header.insertBefore(starBtn, arrow);
+  });
+
+  // Favorites filter pill
+  var favBtn = document.getElementById('favFilterBtn');
+  if (favBtn) {
+    favBtn.addEventListener('click', function () {
+      favFilterActive = !favFilterActive;
+      favBtn.classList.toggle('active', favFilterActive);
+      filterTopics(document.getElementById('query').value);
+    });
+  }
+
+  updateFavCount();
 })();
 
 // ============================================================

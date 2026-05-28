@@ -99,3 +99,19 @@
   pointer-events: auto;
   transform: translateY(-50%) scale(1);
 }
+
+/* Compact mode — hide cubes and filter pills */
+.search-box-form-container.compact #super-cubes-container,
+.search-box-form-container.compact #filterPills {
+  display: none;
+}
+
+.search-box-form-container.compact {
+  padding: 0.5rem 1rem;
+}
+
+@media screen and (max-width: 600px) {
+  .filter-pills {
+    flex-wrap: wrap;
+  }
+}

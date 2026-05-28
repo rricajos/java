@@ -37,6 +37,9 @@
 
 <body>
 
+  <!-- Skip to content (accessibility) -->
+  <a class="skip-link" href="#section-basics">Saltar al contenido</a>
+
   <!-- Scroll progress bar -->
   <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -44,6 +47,12 @@
   <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
     <i class="material-icons" id="themeIcon">dark_mode</i>
   </button>
+
+  <!-- Quick-jump (table of contents) -->
+  <button class="quickjump-toggle" id="quickjumpToggle" title="Tabla de contenidos">
+    <i class="material-icons">toc</i>
+  </button>
+  <div class="quickjump-dropdown" id="quickjumpDropdown"></div>
 
   <!-- Hero Banner -->
   <header class="banner" id="banner">
@@ -90,6 +99,17 @@
       </div>
     </form>
     <div class="search-results-count" id="searchResultsCount" aria-live="polite" role="status"></div>
+    <div class="filter-pills" id="filterPills">
+      <button class="filter-pill fav-filter-btn" id="favFilterBtn" title="Filtrar favoritos">
+        <i class="material-icons" style="font-size:16px">star</i> Favoritos <span class="fav-count" id="favCount">0</span>
+      </button>
+      <span class="filter-pill-divider"></span>
+      <button class="filter-pill category-chip active" data-cat="all">All</button>
+      <button class="filter-pill category-chip" data-cat="basics">Basics</button>
+      <button class="filter-pill category-chip" data-cat="good">Good</button>
+      <button class="filter-pill category-chip" data-cat="pro">Pro</button>
+      <button class="filter-pill category-chip" data-cat="geek">Geek</button>
+    </div>
 
     <div id="super-cubes-container">
 
