@@ -76,6 +76,9 @@
         <span>basics &rarr; geek</span>
         <span class="banner-java-badge">Java 21+</span>
         <span class="banner-progress-badge" id="globalProgress">0 % leído</span>
+        <button class="stats-toggle-btn" id="statsToggleBtn" title="Ver estadísticas detalladas" aria-label="Estadísticas">
+          <i class="material-icons" style="font-size:14px">bar_chart</i>
+        </button>
       </div>
     </div>
 
@@ -89,6 +92,13 @@
     </div>
   </header>
 
+  <!-- Stats dashboard panel -->
+  <div class="stats-panel" id="statsPanel">
+    <div class="stats-panel-inner">
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+  </div>
+
   <!-- Navigation panel -->
   <nav aria-label="navigation" class="search-box-form-container">
 
@@ -97,6 +107,9 @@
         autocomplete="off" oninput="debouncedSearch()" aria-label="Buscar topics">
       <button type="button" class="search-box-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
         <i class="material-icons">close</i>
+      </button>
+      <button type="button" class="shuffle-btn" id="shuffleBtn" title="Topic aleatorio (Ctrl+Shift+R)" aria-label="Topic aleatorio">
+        <i class="material-icons">shuffle</i>
       </button>
       <div class="search-box-form-submit" onclick="search()">
         <i class="search-box-form-submit-icon material-icons">search</i>
@@ -629,6 +642,7 @@
         <div class="shortcut-row"><kbd>/</kbd><span>Enfocar búsqueda</span></div>
         <div class="shortcut-row"><kbd>J</kbd><span>Siguiente topic</span></div>
         <div class="shortcut-row"><kbd>K</kbd><span>Topic anterior</span></div>
+        <div class="shortcut-row"><kbd>Ctrl+Shift+R</kbd><span>Topic aleatorio</span></div>
       </div>
     </div>
   </div>

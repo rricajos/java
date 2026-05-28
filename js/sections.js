@@ -104,6 +104,90 @@ var ResumeSession = (function () {
 })();
 
 /**
+ * Filter state persistence module
+ */
+var FilterState = (function () {
+  var KEY = 'sjb-filter-state';
+
+  function save(category, favActive) {
+    var data = { category: category, favActive: favActive };
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function get() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || { category: 'all', favActive: false };
+    } catch (e) {
+      return { category: 'all', favActive: false };
+    }
+  }
+
+  return { save: save, get: get };
+})();
+
+/**
+ * Code font size persistence module
+ */
+var CodeFontSize = (function () {
+  var KEY = 'sjb-code-font-size';
+  var DEFAULT_SIZE = 0.82;
+  var MIN_SIZE = 0.62;
+  var MAX_SIZE = 1.12;
+  var STEP = 0.05;
+
+  function getSize() {
+    try {
+      var stored = parseFloat(localStorage.getItem(KEY));
+      return isNaN(stored) ? DEFAULT_SIZE : Math.max(MIN_SIZE, Math.min(MAX_SIZE, stored));
+    } catch (e) {
+      return DEFAULT_SIZE;
+    }
+  }
+
+  function setSize(size) {
+    size = Math.max(MIN_SIZE, Math.min(MAX_SIZE, size));
+    localStorage.setItem(KEY, String(size));
+    return size;
+  }
+
+  function increase() {
+    return setSize(Math.round((getSize() + STEP) * 100) / 100);
+  }
+
+  function decrease() {
+    return setSize(Math.round((getSize() - STEP) * 100) / 100);
+  }
+
+  function reset() {
+    localStorage.removeItem(KEY);
+    return DEFAULT_SIZE;
+  }
+
+  function isDefault() {
+    return getSize() === DEFAULT_SIZE;
+  }
+
+  function isMin() {
+    return getSize() <= MIN_SIZE;
+  }
+
+  function isMax() {
+    return getSize() >= MAX_SIZE;
+  }
+
+  return {
+    getSize: getSize,
+    increase: increase,
+    decrease: decrease,
+    reset: reset,
+    isDefault: isDefault,
+    isMin: isMin,
+    isMax: isMax,
+    DEFAULT_SIZE: DEFAULT_SIZE
+  };
+})();
+
+/**
  * Show a toast notification
  */
 function showToast(icon, message) {
@@ -477,6 +561,12 @@ function updateSectionProgress() {
       globalEl.classList.remove('complete');
     }
   }
+
+  // Auto-refresh stats dashboard if visible
+  if (typeof StatsDashboard !== 'undefined') {
+    var sp = document.getElementById('statsPanel');
+    if (sp && sp.classList.contains('visible')) StatsDashboard.refresh();
+  }
 }
 
 function showCelebration(sectionName) {
@@ -659,6 +749,57 @@ function renderCode(contentEl, code) {
   toolbar.appendChild(dlBtn);
   toolbar.appendChild(notesBtn);
 
+  // Font size zoom controls
+  var zoomOutBtn = document.createElement('button');
+  zoomOutBtn.className = 'code-toolbar-btn code-zoom-btn';
+  zoomOutBtn.innerHTML = '<i class="material-icons" style="font-size:16px">remove</i>';
+  zoomOutBtn.title = 'Reducir tamaño de fuente';
+  zoomOutBtn.disabled = CodeFontSize.isMin();
+
+  var zoomLabel = document.createElement('span');
+  zoomLabel.className = 'code-zoom-label';
+  var currentPct = Math.round((CodeFontSize.getSize() / CodeFontSize.DEFAULT_SIZE) * 100);
+  zoomLabel.textContent = currentPct + '%';
+  if (CodeFontSize.isDefault()) zoomLabel.style.opacity = '0.5';
+
+  var zoomInBtn = document.createElement('button');
+  zoomInBtn.className = 'code-toolbar-btn code-zoom-btn';
+  zoomInBtn.innerHTML = '<i class="material-icons" style="font-size:16px">add</i>';
+  zoomInBtn.title = 'Aumentar tamaño de fuente';
+  zoomInBtn.disabled = CodeFontSize.isMax();
+
+  function applyZoomToAll(size) {
+    document.querySelectorAll('.section-topic-content').forEach(function (el) {
+      el.style.fontSize = size + 'em';
+    });
+    var pct = Math.round((size / CodeFontSize.DEFAULT_SIZE) * 100);
+    document.querySelectorAll('.code-zoom-label').forEach(function (lbl) {
+      lbl.textContent = pct + '%';
+      lbl.style.opacity = CodeFontSize.isDefault() ? '0.5' : '1';
+    });
+    document.querySelectorAll('.code-zoom-btn').forEach(function (b) {
+      if (b.title.indexOf('Reducir') !== -1) b.disabled = CodeFontSize.isMin();
+      if (b.title.indexOf('Aumentar') !== -1) b.disabled = CodeFontSize.isMax();
+    });
+  }
+
+  zoomOutBtn.addEventListener('click', function () {
+    applyZoomToAll(CodeFontSize.decrease());
+  });
+
+  zoomInBtn.addEventListener('click', function () {
+    applyZoomToAll(CodeFontSize.increase());
+  });
+
+  zoomLabel.addEventListener('dblclick', function () {
+    applyZoomToAll(CodeFontSize.reset());
+    showToast('text_fields', 'Tamaño de fuente restaurado');
+  });
+
+  toolbar.appendChild(zoomOutBtn);
+  toolbar.appendChild(zoomLabel);
+  toolbar.appendChild(zoomInBtn);
+
   var navSpacer = document.createElement('span');
   navSpacer.className = 'code-toolbar-spacer';
   toolbar.appendChild(navSpacer);
@@ -742,6 +883,12 @@ function renderCode(contentEl, code) {
 
   contentEl.appendChild(codeTable);
   contentEl.dataset.loaded = 'true';
+
+  // Apply saved code font size
+  var savedFontSize = CodeFontSize.getSize();
+  if (savedFontSize !== CodeFontSize.DEFAULT_SIZE) {
+    contentEl.style.fontSize = savedFontSize + 'em';
+  }
 
   // Add line count + reading time badges to the topic description
   var topicEl = contentEl.closest('.section-topic');
@@ -1567,6 +1714,7 @@ document.addEventListener('keydown', function (event) {
       chips.forEach(function (c) { c.classList.remove('active'); });
       chip.classList.add('active');
       activeCategory = chip.dataset.cat;
+      FilterState.save(activeCategory, favFilterActive);
       filterTopics(document.getElementById('query').value);
     });
   });
@@ -1618,11 +1766,40 @@ document.addEventListener('keydown', function (event) {
     favBtn.addEventListener('click', function () {
       favFilterActive = !favFilterActive;
       favBtn.classList.toggle('active', favFilterActive);
+      FilterState.save(activeCategory, favFilterActive);
       filterTopics(document.getElementById('query').value);
     });
   }
 
   updateFavCount();
+})();
+
+// ============================================================
+// RESTORE FILTER STATE
+// ============================================================
+
+(function () {
+  var state = FilterState.get();
+
+  if (state.category && state.category !== 'all') {
+    var chips = document.querySelectorAll('.category-chip');
+    chips.forEach(function (c) { c.classList.remove('active'); });
+    var target = document.querySelector('.category-chip[data-cat="' + state.category + '"]');
+    if (target) {
+      target.classList.add('active');
+      activeCategory = state.category;
+    }
+  }
+
+  if (state.favActive) {
+    favFilterActive = true;
+    var favBtn = document.getElementById('favFilterBtn');
+    if (favBtn) favBtn.classList.add('active');
+  }
+
+  if (state.category !== 'all' || state.favActive) {
+    filterTopics(document.getElementById('query').value);
+  }
 })();
 
 // ============================================================
@@ -1645,6 +1822,116 @@ document.addEventListener('keydown', function (event) {
       }).catch(function () {});
     }, { passive: true });
   });
+})();
+
+// ============================================================
+// RANDOM TOPIC (SHUFFLE) BUTTON
+// ============================================================
+
+(function () {
+  var shuffleBtn = document.getElementById('shuffleBtn');
+  if (!shuffleBtn) return;
+
+  function openRandomTopic() {
+    var allTopics = Array.prototype.slice.call(
+      document.querySelectorAll('.section-topic:not(.filtered-out)')
+    );
+    if (allTopics.length === 0) return;
+
+    var read = getReadTopics();
+    var unread = allTopics.filter(function (t) {
+      return read.indexOf(t.dataset.topic) === -1;
+    });
+
+    var pool = unread.length > 0 ? unread : allTopics;
+    var randomEl = pool[Math.floor(Math.random() * pool.length)];
+
+    document.querySelectorAll('.section-topic.open').forEach(function (t) {
+      t.classList.remove('open');
+      var h = t.querySelector('.section-topic-header');
+      if (h) h.setAttribute('aria-expanded', 'false');
+    });
+
+    var header = randomEl.querySelector('.section-topic-header');
+    if (header) toggleTopic(header);
+
+    showToast('shuffle', 'Topic aleatorio');
+  }
+
+  shuffleBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    openRandomTopic();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+      e.preventDefault();
+      openRandomTopic();
+    }
+  });
+})();
+
+// ============================================================
+// STATS DASHBOARD
+// ============================================================
+
+var StatsDashboard = (function () {
+  var panel = document.getElementById('statsPanel');
+  var grid = document.getElementById('statsGrid');
+  var btn = document.getElementById('statsToggleBtn');
+
+  if (!panel || !grid || !btn) return { refresh: function () {} };
+
+  btn.addEventListener('click', function () {
+    var isVisible = panel.classList.contains('visible');
+    if (!isVisible) refresh();
+    panel.classList.toggle('visible');
+  });
+
+  function refresh() {
+    grid.innerHTML = '';
+    var read = getReadTopics();
+    var favs = getFavorites();
+    var notesCount = TopicNotes.count();
+    var totalTopics = Object.keys(topicPaths).length;
+
+    var summaryData = [
+      { value: read.length + '/' + totalTopics, label: 'Topics leídos' },
+      { value: Math.round((read.length / totalTopics) * 100) + '%', label: 'Completado' },
+      { value: String(favs.length), label: 'Favoritos' },
+      { value: String(notesCount), label: 'Notas' }
+    ];
+
+    summaryData.forEach(function (item) {
+      var card = document.createElement('div');
+      card.className = 'stats-card';
+      card.innerHTML = '<div class="stats-card-value">' + item.value + '</div>'
+        + '<div class="stats-card-label">' + item.label + '</div>';
+      grid.appendChild(card);
+    });
+
+    var categories = ['basics', 'good', 'pro', 'geek'];
+    categories.forEach(function (cat) {
+      var section = document.querySelector('.section[data-category="' + cat + '"]');
+      if (!section) return;
+      var topics = section.querySelectorAll('.section-topic');
+      var total = topics.length;
+      var readCount = 0;
+      topics.forEach(function (t) {
+        if (read.indexOf(t.dataset.topic) !== -1) readCount++;
+      });
+      var pct = total > 0 ? Math.round((readCount / total) * 100) : 0;
+
+      var bar = document.createElement('div');
+      bar.className = 'stats-category-bar';
+      bar.innerHTML = '<span class="stats-category-name">' + cat.charAt(0).toUpperCase() + cat.slice(1) + '</span>'
+        + '<div class="stats-bar-track"><div class="stats-bar-fill' + (pct === 100 ? ' complete' : '') + '" style="width:' + pct + '%"></div></div>'
+        + '<span class="stats-category-pct">' + pct + '%</span>';
+      grid.appendChild(bar);
+    });
+  }
+
+  return { refresh: refresh };
 })();
 
 // ============================================================
@@ -1788,7 +2075,9 @@ var DataPortability = (function () {
       favorites: getFavorites(),
       notes: TopicNotes.getAll(),
       searchHistory: SearchHistory.getHistory(),
-      theme: localStorage.getItem('sjb-theme')
+      theme: localStorage.getItem('sjb-theme'),
+      filterState: FilterState.get(),
+      codeFontSize: localStorage.getItem('sjb-code-font-size')
     };
 
     var json = JSON.stringify(data, null, 2);
@@ -1824,6 +2113,8 @@ var DataPortability = (function () {
           if (data.notes) localStorage.setItem('sjb-topic-notes', JSON.stringify(data.notes));
           if (data.searchHistory) localStorage.setItem('sjb-search-history', JSON.stringify(data.searchHistory));
           if (data.theme) localStorage.setItem('sjb-theme', data.theme);
+          if (data.filterState) localStorage.setItem('sjb-filter-state', JSON.stringify(data.filterState));
+          if (data.codeFontSize) localStorage.setItem('sjb-code-font-size', data.codeFontSize);
 
           showToast('upload', 'Progreso importado — recargando...');
           setTimeout(function () { location.reload(); }, 1200);
