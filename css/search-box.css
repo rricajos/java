@@ -6,6 +6,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background-color: var(--nav-bg);
+  transition: padding 0.25s ease;
 }
 
 .search-box-form {

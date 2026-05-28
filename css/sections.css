@@ -108,7 +108,7 @@
   margin-bottom: 1em;
   overflow: hidden;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease,
-              opacity 0.5s ease, transform 0.5s ease;
+              opacity 0.4s ease, transform 0.4s ease;
   opacity: 0;
   transform: translateY(16px);
 }
@@ -270,6 +270,17 @@
 }
 
 /* Code content area */
+/* Grid wrapper for smooth open/close */
+.section-topic-content-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.section-topic.open .section-topic-content-wrap {
+  grid-template-rows: 1fr;
+}
+
 .section-topic-content {
   background-color: var(--code-bg);
   color: var(--code-text);
@@ -281,17 +292,17 @@
   white-space: pre;
   scrollbar-color: var(--primary-color) var(--code-bg);
   scrollbar-width: thin;
-  max-height: 0;
+  min-height: 0;
   opacity: 0;
-  transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.25s ease;
+  transition: opacity 0.25s ease, padding 0.25s ease;
 }
 
 .section-topic.open .section-topic-content {
-  max-height: 80vh;
   opacity: 1;
   padding: 1.2em 1.8em;
   overflow-x: auto;
   overflow-y: auto;
+  max-height: 80vh;
 }
 
 /* Webkit scrollbar for Chrome/Safari/Edge */
@@ -1238,7 +1249,7 @@
   /* Hide interactive elements */
   .search-box-form-container,
   .back-to-top,
-  .theme-toggle,
+  .fixed-actions,
   .code-toolbar,
   .section-toggle-btn,
   .section-topic-arrow,
@@ -1250,7 +1261,6 @@
   .filter-pills,
   .search-results-count,
   .quickjump-dropdown,
-  .quickjump-toggle,
   .toast-container,
   .scroll-progress,
   .topic-fav-btn,
@@ -1276,6 +1286,10 @@
     transform: none !important;
   }
 
+  .section-topic-content-wrap {
+    grid-template-rows: 1fr !important;
+  }
+
   .section-topic-content {
     max-height: none !important;
     opacity: 1 !important;
@@ -1284,10 +1298,7 @@
     background: #f5f5f5 !important;
     color: #333 !important;
     font-size: 0.75em;
-  }
-
-  .section-topic.open .section-topic-content {
-    max-height: none !important;
+    min-height: auto !important;
   }
 
   /* No breaks inside code blocks */

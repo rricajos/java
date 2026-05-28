@@ -165,7 +165,6 @@
 
 html {
   scroll-padding-top: 70px;
-  scroll-behavior: smooth;
 }
 
 body {
@@ -215,12 +214,18 @@ a:hover {
   color: #fff;
 }
 
-/* Theme toggle button */
-.theme-toggle {
+/* Fixed action buttons (right column) */
+.fixed-actions {
   position: fixed;
-  top: 0.8em;
-  right: 0.8em;
+  top: 0.6em;
+  right: 0.6em;
   z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.fixed-actions button {
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -232,57 +237,25 @@ a:hover {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   backdrop-filter: blur(8px);
 }
 
-.theme-toggle:hover {
+.fixed-actions button:hover {
   color: var(--primary-color);
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
   transform: scale(1.05);
 }
 
-.theme-toggle .material-icons {
-  font-size: 18px;
-}
-
-/* Quick-jump button & dropdown */
-.quickjump-toggle {
-  position: fixed;
-  top: 3.4em;
-  right: 0.8em;
-  z-index: 200;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--card-bg);
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
-}
-
-.quickjump-toggle:hover {
-  color: var(--primary-color);
-  border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
-  transform: scale(1.05);
-}
-
-.quickjump-toggle .material-icons {
+.fixed-actions button .material-icons {
   font-size: 18px;
 }
 
 .quickjump-dropdown {
   position: fixed;
-  top: 6em;
-  right: 0.8em;
+  top: 5.5em;
+  right: 0.6em;
   z-index: 200;
   width: 300px;
   max-height: 70vh;
@@ -373,8 +346,24 @@ a:hover {
 
 @media screen and (max-width: 600px) {
   .quickjump-dropdown {
-    width: calc(100vw - 1.6em);
-    right: 0.8em;
+    width: calc(100vw - 1.2em);
+    right: 0.6em;
+  }
+
+  .fixed-actions {
+    top: 0.4em;
+    right: 0.4em;
+    gap: 0.4em;
+  }
+
+  .fixed-actions button {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .fixed-actions button .material-icons {
+    font-size: 16px;
   }
 }
 
@@ -387,6 +376,6 @@ a:hover {
   width: 0%;
   background: linear-gradient(90deg, var(--primary-color), #ffc66d);
   z-index: 300;
-  transition: width 0.05s linear;
   pointer-events: none;
+  will-change: width;
 }

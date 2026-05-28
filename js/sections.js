@@ -1336,8 +1336,11 @@ function filterTopics(query) {
   var backToTop = document.getElementById('backToTop');
   var scrollProgress = document.getElementById('scrollProgress');
   var nav = document.querySelector('.search-box-form-container');
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.section'));
+  var cubes = Array.prototype.slice.call(document.querySelectorAll('.cube'));
+  var ticking = false;
 
-  window.addEventListener('scroll', function () {
+  function onScroll() {
     var y = window.scrollY;
 
     // Back to top visibility
@@ -1366,8 +1369,6 @@ function filterTopics(query) {
     }
 
     // Scroll spy — highlight active section cube
-    var sections = document.querySelectorAll('.section');
-    var cubes = document.querySelectorAll('.cube');
     var activeIdx = -1;
     var offset = 150;
 
@@ -1385,6 +1386,15 @@ function filterTopics(query) {
         cube.classList.remove('active');
       }
     });
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      requestAnimationFrame(onScroll);
+      ticking = true;
+    }
   }, { passive: true });
 })();
 

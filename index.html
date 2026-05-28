@@ -47,15 +47,15 @@
   <!-- Scroll progress bar -->
   <div class="scroll-progress" id="scrollProgress"></div>
 
-  <!-- Theme toggle -->
-  <button class="theme-toggle" id="themeToggle" title="Cambiar tema">
-    <i class="material-icons" id="themeIcon">dark_mode</i>
-  </button>
-
-  <!-- Quick-jump (table of contents) -->
-  <button class="quickjump-toggle" id="quickjumpToggle" title="Tabla de contenidos">
-    <i class="material-icons">toc</i>
-  </button>
+  <!-- Fixed action buttons -->
+  <div class="fixed-actions">
+    <button id="themeToggle" title="Cambiar tema">
+      <i class="material-icons" id="themeIcon">dark_mode</i>
+    </button>
+    <button id="quickjumpToggle" title="Tabla de contenidos">
+      <i class="material-icons">toc</i>
+    </button>
+  </div>
   <div class="quickjump-dropdown" id="quickjumpDropdown"></div>
 
   <!-- Hero Banner -->
@@ -227,7 +227,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Primitivos, String, var, casting, wrappers, constantes, comparación</p>
-        <div class="section-topic-content" id="topic-variables_and_types"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-variables_and_types"></div></div>
       </div>
 
       <div class="section-topic" data-topic="operators_arithmetic">
@@ -239,7 +239,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">+, -, *, /, %, ++, --, overflow, Math class</p>
-        <div class="section-topic-content" id="topic-operators_arithmetic"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-operators_arithmetic"></div></div>
       </div>
 
       <div class="section-topic" data-topic="operators_assignment">
@@ -251,7 +251,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">+=, -=, *=, /=, %=, bitwise assignment, cast implícito</p>
-        <div class="section-topic-content" id="topic-operators_assignment"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-operators_assignment"></div></div>
       </div>
 
       <div class="section-topic" data-topic="operators_logical">
@@ -263,7 +263,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">&&, ||, !, short-circuit, bitwise, instanceof, pattern matching</p>
-        <div class="section-topic-content" id="topic-operators_logical"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-operators_logical"></div></div>
       </div>
 
       <div class="section-topic" data-topic="operators_conditional">
@@ -275,7 +275,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Ternario (?:), switch clásico, switch expressions (Java 14+), pattern matching (Java 21+)</p>
-        <div class="section-topic-content" id="topic-operators_conditional"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-operators_conditional"></div></div>
       </div>
 
       <div class="section-topic" data-topic="control_flow">
@@ -287,7 +287,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">if/else, for, for-each, while, do-while, break, continue, labeled loops</p>
-        <div class="section-topic-content" id="topic-control_flow"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-control_flow"></div></div>
       </div>
 
       <div class="section-topic" data-topic="datetime_api">
@@ -299,7 +299,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">LocalDate, LocalTime, ZonedDateTime, Instant, Duration, Period, DateTimeFormatter</p>
-        <div class="section-topic-content" id="topic-datetime_api"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-datetime_api"></div></div>
       </div>
 
       <div class="section-topic" data-topic="packages_and_access">
@@ -311,7 +311,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">public, private, protected, package-private, encapsulación, imports, final, static</p>
-        <div class="section-topic-content" id="topic-packages_and_access"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-packages_and_access"></div></div>
       </div>
     </section>
 
@@ -328,7 +328,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Declaración, sobrecarga, varargs, paso por valor, recursión</p>
-        <div class="section-topic-content" id="topic-methods"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-methods"></div></div>
       </div>
 
       <div class="section-topic" data-topic="strings">
@@ -340,7 +340,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">String methods, StringBuilder, split/join, format, regex, comparación</p>
-        <div class="section-topic-content" id="topic-strings"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-strings"></div></div>
       </div>
 
       <div class="section-topic" data-topic="arrays">
@@ -352,7 +352,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Declaración, iteración, Arrays utility, multidimensional, conversión a List</p>
-        <div class="section-topic-content" id="topic-arrays"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-arrays"></div></div>
       </div>
 
       <div class="section-topic" data-topic="optional">
@@ -364,7 +364,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Optional.of, ofNullable, orElse, map, flatMap, filter, ifPresent, antipatrones</p>
-        <div class="section-topic-content" id="topic-optional"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-optional"></div></div>
       </div>
 
       <div class="section-topic" data-topic="inner_classes">
@@ -376,7 +376,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Static nested, inner, local, anonymous, Builder pattern, Iterator pattern</p>
-        <div class="section-topic-content" id="topic-inner_classes"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-inner_classes"></div></div>
       </div>
 
       <div class="section-topic" data-topic="regex">
@@ -388,7 +388,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Pattern, Matcher, grupos de captura, validación, reemplazo, split, flags</p>
-        <div class="section-topic-content" id="topic-regex"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-regex"></div></div>
       </div>
     </section>
 
@@ -405,7 +405,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Clases, constructores, encapsulación, static, records, enums, equals/hashCode</p>
-        <div class="section-topic-content" id="topic-oop_classes"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-oop_classes"></div></div>
       </div>
 
       <div class="section-topic" data-topic="oop_inheritance">
@@ -417,7 +417,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">extends, super, override, abstract, interfaces, sealed classes, casting</p>
-        <div class="section-topic-content" id="topic-oop_inheritance"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-oop_inheritance"></div></div>
       </div>
 
       <div class="section-topic" data-topic="exceptions">
@@ -429,7 +429,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">try/catch/finally, checked vs unchecked, throw, custom exceptions, try-with-resources</p>
-        <div class="section-topic-content" id="topic-exceptions"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-exceptions"></div></div>
       </div>
 
       <div class="section-topic" data-topic="collections">
@@ -441,7 +441,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">List, Set, Map, Queue, Deque, Iterator, Collections utility</p>
-        <div class="section-topic-content" id="topic-collections"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-collections"></div></div>
       </div>
 
       <div class="section-topic" data-topic="annotations">
@@ -453,7 +453,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">@Override, @Deprecated, custom annotations, meta-annotations, reflection en runtime</p>
-        <div class="section-topic-content" id="topic-annotations"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-annotations"></div></div>
       </div>
 
       <div class="section-topic" data-topic="jdbc">
@@ -465,7 +465,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Connection, PreparedStatement, ResultSet, CRUD, transacciones, batch, SQL injection</p>
-        <div class="section-topic-content" id="topic-jdbc"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-jdbc"></div></div>
       </div>
 
       <div class="section-topic" data-topic="junit">
@@ -477,7 +477,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Mini-framework ejecutable: @Test, assertions, assertThrows, assertAll, TestRunner con reflection</p>
-        <div class="section-topic-content" id="topic-junit"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-junit"></div></div>
       </div>
 
       <div class="section-topic" data-topic="design_patterns">
@@ -489,7 +489,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Singleton, Factory, Builder, Observer, Strategy, Decorator, Adapter</p>
-        <div class="section-topic-content" id="topic-design_patterns"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-design_patterns"></div></div>
       </div>
 
       <div class="section-topic" data-topic="build_tools">
@@ -501,7 +501,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">pom.xml, build.gradle, dependencias, plugins, lifecycle, wrapper, comandos</p>
-        <div class="section-topic-content" id="topic-build_tools"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-build_tools"></div></div>
       </div>
     </section>
 
@@ -518,7 +518,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Clases genéricas, bounded types, wildcards, PECS, type erasure</p>
-        <div class="section-topic-content" id="topic-generics"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-generics"></div></div>
       </div>
 
       <div class="section-topic" data-topic="lambdas_and_functional">
@@ -530,7 +530,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Lambda expressions, Predicate, Function, Consumer, Supplier, method references</p>
-        <div class="section-topic-content" id="topic-lambdas_and_functional"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-lambdas_and_functional"></div></div>
       </div>
 
       <div class="section-topic" data-topic="streams">
@@ -542,7 +542,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">filter, map, flatMap, reduce, collect, Collectors, parallel streams</p>
-        <div class="section-topic-content" id="topic-streams"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-streams"></div></div>
       </div>
 
       <div class="section-topic" data-topic="concurrency">
@@ -554,7 +554,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Thread, Runnable, synchronized, ExecutorService, Future, CompletableFuture</p>
-        <div class="section-topic-content" id="topic-concurrency"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-concurrency"></div></div>
       </div>
 
       <div class="section-topic" data-topic="file_io">
@@ -566,7 +566,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">NIO.2, Path, Files, BufferedReader/Writer, try-with-resources, Scanner</p>
-        <div class="section-topic-content" id="topic-file_io"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-file_io"></div></div>
       </div>
 
       <div class="section-topic" data-topic="networking">
@@ -578,7 +578,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">HttpClient (Java 11+), GET, POST, PUT, DELETE, async, URI, Sockets</p>
-        <div class="section-topic-content" id="topic-networking"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-networking"></div></div>
       </div>
 
       <div class="section-topic" data-topic="reflection">
@@ -590,7 +590,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">Class, Field, Method, Constructor, acceso dinámico, inspección en runtime</p>
-        <div class="section-topic-content" id="topic-reflection"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-reflection"></div></div>
       </div>
 
       <div class="section-topic" data-topic="modules">
@@ -602,7 +602,7 @@
           <i class="material-icons section-topic-arrow">expand_more</i>
         </div>
         <p class="section-topic-desc">module-info.java, requires, exports, opens, ServiceLoader, jlink</p>
-        <div class="section-topic-content" id="topic-modules"></div>
+        <div class="section-topic-content-wrap"><div class="section-topic-content" id="topic-modules"></div></div>
       </div>
     </section>
 
