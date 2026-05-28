@@ -444,6 +444,9 @@ function toggleTopic(headerEl) {
     // Scroll topic into view after a short delay for animation
     setTimeout(function () {
       topicEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Move focus to content for keyboard users
+      contentEl.setAttribute('tabindex', '-1');
+      contentEl.focus({ preventScroll: true });
     }, 100);
   }
 }
@@ -622,7 +625,19 @@ function loadTopicCode(topicName, contentEl) {
     .catch(function (error) {
       contentEl.classList.remove('loading');
       contentEl.setAttribute('role', 'alert');
-      contentEl.textContent = 'Error loading code: ' + error.message;
+      contentEl.innerHTML = '';
+      var errorMsg = document.createElement('span');
+      errorMsg.textContent = 'Error: ' + error.message + ' ';
+      var retryBtn = document.createElement('button');
+      retryBtn.className = 'code-toolbar-btn';
+      retryBtn.innerHTML = '<i class="material-icons" style="font-size:16px">refresh</i><span class="btn-label"> Retry</span>';
+      retryBtn.addEventListener('click', function () {
+        contentEl.removeAttribute('role');
+        contentEl.dataset.loaded = '';
+        loadTopicCode(topicName, contentEl);
+      });
+      contentEl.appendChild(errorMsg);
+      contentEl.appendChild(retryBtn);
     });
 }
 
@@ -639,7 +654,7 @@ function renderCode(contentEl, code) {
 
   var copyBtn = document.createElement('button');
   copyBtn.className = 'code-toolbar-btn';
-  copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
+  copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i><span class="btn-label"> Copy</span>';
   copyBtn.addEventListener('click', function () {
     var highlightedLines = contentEl.querySelectorAll('.code-line.highlighted');
     if (highlightedLines.length > 0) {
@@ -648,18 +663,18 @@ function renderCode(contentEl, code) {
         return contentSpan ? contentSpan.textContent : '';
       }).join('\n');
       navigator.clipboard.writeText(selectedCode).then(function () {
-        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i><span class="btn-label"> Copied!</span>';
         showToast('check', highlightedLines.length + ' líneas copiadas');
         setTimeout(function () {
-          copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
+          copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i><span class="btn-label"> Copy</span>';
         }, 2000);
       });
     } else {
       navigator.clipboard.writeText(code).then(function () {
-        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i><span class="btn-label"> Copied!</span>';
         showToast('check', 'Código copiado al portapapeles');
         setTimeout(function () {
-          copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
+          copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i><span class="btn-label"> Copy</span>';
         }, 2000);
       });
     }
@@ -668,29 +683,29 @@ function renderCode(contentEl, code) {
   // Wrap toggle button
   var wrapBtn = document.createElement('button');
   wrapBtn.className = 'code-toolbar-btn';
-  wrapBtn.innerHTML = '<i class="material-icons" style="font-size:16px">wrap_text</i> Wrap';
+  wrapBtn.innerHTML = '<i class="material-icons" style="font-size:16px">wrap_text</i><span class="btn-label"> Wrap</span>';
   wrapBtn.addEventListener('click', function () {
     var codeLines = contentEl.querySelector('.code-lines');
     if (!codeLines) return;
     var isWrapped = codeLines.classList.toggle('wrapped');
     wrapBtn.innerHTML = isWrapped
-      ? '<i class="material-icons" style="font-size:16px">wrap_text</i> Nowrap'
-      : '<i class="material-icons" style="font-size:16px">wrap_text</i> Wrap';
+      ? '<i class="material-icons" style="font-size:16px">wrap_text</i><span class="btn-label"> Nowrap</span>'
+      : '<i class="material-icons" style="font-size:16px">wrap_text</i><span class="btn-label"> Wrap</span>';
   });
 
   // Share link button
   var shareBtn = document.createElement('button');
   shareBtn.className = 'code-toolbar-btn';
-  shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">link</i> Share';
+  shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">link</i><span class="btn-label"> Share</span>';
   shareBtn.addEventListener('click', function () {
     var topicEl = contentEl.closest('.section-topic');
     var topicName = topicEl ? topicEl.dataset.topic : '';
     var url = window.location.origin + window.location.pathname + '#' + topicName;
     navigator.clipboard.writeText(url).then(function () {
-      shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+      shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i><span class="btn-label"> Copied!</span>';
       showToast('link', 'Enlace copiado al portapapeles');
       setTimeout(function () {
-        shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">link</i> Share';
+        shareBtn.innerHTML = '<i class="material-icons" style="font-size:16px">link</i><span class="btn-label"> Share</span>';
       }, 2000);
     });
   });
@@ -698,7 +713,7 @@ function renderCode(contentEl, code) {
   // Download .java file button
   var dlBtn = document.createElement('button');
   dlBtn.className = 'code-toolbar-btn';
-  dlBtn.innerHTML = '<i class="material-icons" style="font-size:16px">download</i> .java';
+  dlBtn.innerHTML = '<i class="material-icons" style="font-size:16px">download</i><span class="btn-label"> .java</span>';
   dlBtn.addEventListener('click', function () {
     var topicEl = contentEl.closest('.section-topic');
     var topicName = topicEl ? topicEl.dataset.topic : 'code';
@@ -722,7 +737,7 @@ function renderCode(contentEl, code) {
 
   var prevBtn = document.createElement('button');
   prevBtn.className = 'code-toolbar-btn code-nav-btn';
-  prevBtn.innerHTML = '<i class="material-icons" style="font-size:16px">navigate_before</i> Prev';
+  prevBtn.innerHTML = '<i class="material-icons" style="font-size:16px">navigate_before</i><span class="btn-label"> Prev</span>';
   prevBtn.disabled = currentIdx <= 0;
   prevBtn.addEventListener('click', function () {
     if (currentIdx > 0) {
@@ -735,7 +750,7 @@ function renderCode(contentEl, code) {
 
   var nextBtn = document.createElement('button');
   nextBtn.className = 'code-toolbar-btn code-nav-btn';
-  nextBtn.innerHTML = 'Next <i class="material-icons" style="font-size:16px">navigate_next</i>';
+  nextBtn.innerHTML = '<span class="btn-label">Next </span><i class="material-icons" style="font-size:16px">navigate_next</i>';
   nextBtn.disabled = currentIdx >= allTopics.length - 1;
   nextBtn.addEventListener('click', function () {
     if (currentIdx < allTopics.length - 1) {
@@ -751,7 +766,7 @@ function renderCode(contentEl, code) {
   notesBtn.className = 'code-toolbar-btn';
   var existingNote = TopicNotes.get(currentTopic ? currentTopic.dataset.topic : '');
   notesBtn.innerHTML = '<i class="material-icons" style="font-size:16px">'
-    + (existingNote ? 'edit_note' : 'note_add') + '</i> Notes'
+    + (existingNote ? 'edit_note' : 'note_add') + '</i><span class="btn-label"> Notes</span>'
     + (existingNote ? '<span class="notes-indicator"></span>' : '');
   notesBtn.addEventListener('click', function () {
     if (currentTopic) {
@@ -762,7 +777,7 @@ function renderCode(contentEl, code) {
   // Clear highlights button
   var clearHighlightBtn = document.createElement('button');
   clearHighlightBtn.className = 'code-toolbar-btn';
-  clearHighlightBtn.innerHTML = '<i class="material-icons" style="font-size:16px">highlight_off</i> Clear';
+  clearHighlightBtn.innerHTML = '<i class="material-icons" style="font-size:16px">highlight_off</i><span class="btn-label"> Clear</span>';
   clearHighlightBtn.title = 'Limpiar líneas resaltadas';
   clearHighlightBtn.style.display = 'none';
   clearHighlightBtn.addEventListener('click', function () {
@@ -1551,6 +1566,11 @@ document.addEventListener('keydown', function (event) {
     var target = allTopics[nextIdx];
     var header = target.querySelector('.section-topic-header');
     if (header) toggleTopic(header);
+
+    // Show position feedback
+    var topicTitle = target.querySelector('.section-topic-title');
+    var name = topicTitle ? topicTitle.textContent.trim() : '';
+    showToast('unfold_more', (nextIdx + 1) + '/' + allTopics.length + ' — ' + name);
   }
 });
 
@@ -1639,6 +1659,13 @@ document.addEventListener('keydown', function (event) {
     document.documentElement.setAttribute('data-theme', t);
     icon.textContent = t === 'dark' ? 'light_mode' : 'dark_mode';
   }
+
+  // Listen for system theme changes (only when no explicit user preference)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('sjb-theme')) {
+      applyTheme(e.matches ? 'dark' : 'light');
+    }
+  });
 })();
 
 // ============================================================
@@ -2258,7 +2285,7 @@ var DataPortability = (function () {
     ResumeSession.clear();
   });
 
-  // Auto-dismiss after 8 seconds
+  // Auto-dismiss after 12 seconds
   setTimeout(function () {
     if (toast.parentNode) {
       toast.classList.add('fading');
@@ -2266,7 +2293,7 @@ var DataPortability = (function () {
         if (toast.parentNode) toast.parentNode.removeChild(toast);
       }, 300);
     }
-  }, 8000);
+  }, 12000);
 })();
 
 // ============================================================
@@ -2325,12 +2352,35 @@ var DataPortability = (function () {
 // ============================================================
 
 (function () {
+  var offlineBanner = null;
+
+  function showOfflineBanner() {
+    if (offlineBanner) return;
+    offlineBanner = document.createElement('div');
+    offlineBanner.className = 'offline-banner';
+    offlineBanner.innerHTML = '<i class="material-icons" style="font-size:16px">wifi_off</i> Sin conexión — los temas en caché siguen disponibles';
+    document.body.prepend(offlineBanner);
+  }
+
+  function hideOfflineBanner() {
+    if (offlineBanner) {
+      offlineBanner.remove();
+      offlineBanner = null;
+    }
+  }
+
   window.addEventListener('online', function () {
+    hideOfflineBanner();
     showToast('wifi', 'Conexión restaurada');
   });
+
   window.addEventListener('offline', function () {
+    showOfflineBanner();
     showToast('wifi_off', 'Sin conexión — modo offline');
   });
+
+  // Show banner if already offline on load
+  if (!navigator.onLine) showOfflineBanner();
 })();
 
 // ============================================================

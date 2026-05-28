@@ -1,6 +1,6 @@
 .site-footer {
   background: var(--black-color);
-  color: #7d8590;
+  color: var(--footer-text);
   padding: 1.5em 1em;
   margin-top: 2em;
   font-size: 0.8em;
@@ -80,8 +80,8 @@
 }
 
 .footer-reset-btn:hover {
-  color: #f85149;
-  border-color: #f85149;
+  color: var(--danger-color);
+  border-color: var(--danger-color);
 }
 
 @media screen and (max-width: 600px) {

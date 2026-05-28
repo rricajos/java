@@ -80,6 +80,13 @@
   --cube-info-title: #424a53;
   --cube-list-item: #656d76;
   --cube-border: rgba(0, 0, 0, 0.15);
+
+  /* Semantic colors */
+  --success-color: #2ea043;
+  --danger-color: #f85149;
+  --highlight-color: #ffc66d;
+  --celebration-bg: linear-gradient(135deg, #f0f2f5, #e2e6ea);
+  --footer-text: #7d8590;
 }
 
 [data-theme="dark"] {
@@ -157,6 +164,13 @@
   --cube-info-title: #b0bec5;
   --cube-list-item: #7d8590;
   --cube-border: rgba(0, 0, 0, 0.15);
+
+  /* Semantic colors */
+  --success-color: #3fb950;
+  --danger-color: #f85149;
+  --highlight-color: #ffc66d;
+  --celebration-bg: linear-gradient(135deg, #161b22, #1c2333);
+  --footer-text: #7d8590;
 }
 
 * {
@@ -338,7 +352,7 @@ a:hover {
 }
 
 .quickjump-item .topic-read-check {
-  color: #2ea043;
+  color: var(--success-color);
   font-size: 14px !important;
   margin-left: auto;
   flex-shrink: 0;

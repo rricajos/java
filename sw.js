@@ -1,4 +1,4 @@
-var CACHE_NAME = 'sjb-v4';
+var CACHE_NAME = 'sjb-v5';
 var ASSETS = [
   './',
   './index.html',

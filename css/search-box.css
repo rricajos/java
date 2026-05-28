@@ -156,7 +156,7 @@
 }
 
 .search-history-clear:hover {
-  color: #f85149;
+  color: var(--danger-color);
 }
 
 .search-history-item {
@@ -218,6 +218,27 @@
 }
 
 @media screen and (max-width: 600px) {
+  .search-box-form {
+    padding: 0 0.5em;
+  }
+
+  .search-box-form-input {
+    padding: 0 4em 0 0.8em;
+    font-size: 0.9em;
+  }
+
+  .search-box-clear-btn {
+    right: 4.5em;
+  }
+
+  .shuffle-btn {
+    right: 2.8em;
+  }
+
+  .search-box-form-submit {
+    width: 36px;
+  }
+
   .filter-pills {
     flex-wrap: wrap;
   }
