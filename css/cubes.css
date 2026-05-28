@@ -62,7 +62,7 @@
 
 .cube-info {
   padding: 0.4em;
-  color: #8898a8;
+  color: var(--cube-info);
   font-size: 18px;
   width: 100%;
   max-width: 160px;
@@ -73,7 +73,7 @@
   font-size: 13px;
   font-weight: 600;
   margin: 0;
-  color: #b0bec5;
+  color: var(--cube-info-title);
 }
 
 .cube-info-list {
@@ -83,7 +83,7 @@
 
 .cube-info-list-item {
   font-size: 12px;
-  color: #7d8590;
+  color: var(--cube-list-item);
   line-height: 1.6;
 }
 
@@ -100,21 +100,21 @@
 }
 
 .cube-top-side {
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--cube-border);
   color: #fff;
   background-color: var(--primary-color);
   transform: rotate(-45deg) skew(15deg, 15deg) translate(50%, -50%);
 }
 
 .cube-left-side {
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--cube-border);
   color: #fff;
   background-color: var(--accent-color);
   transform: rotate(15deg) skew(15deg, 15deg) translate(-50%, 50%);
 }
 
 .cube-right-side {
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--cube-border);
   color: #fff;
   background-color: var(--primary-second-color);
   transform: rotate(-15deg) skew(-15deg, -15deg) translate(50%, 50%);

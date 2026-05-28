@@ -129,6 +129,12 @@
       <button class="filter-pill category-chip" data-cat="geek">Geek</button>
     </div>
 
+    <div class="breadcrumb-bar" id="breadcrumbBar">
+      <span class="breadcrumb-section" id="breadcrumbSection"></span>
+      <i class="material-icons" style="font-size:14px">chevron_right</i>
+      <span class="breadcrumb-topic" id="breadcrumbTopic"></span>
+    </div>
+
     <div id="super-cubes-container">
 
       <div class="cube" role="button" tabindex="0" aria-label="Ir a sección Basics" onclick="scrollToSection('section-basics')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();scrollToSection('section-basics')}">
@@ -629,10 +635,10 @@
   </footer>
 
   <!-- Keyboard shortcuts modal -->
-  <div class="shortcuts-overlay" id="shortcutsOverlay">
+  <div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
     <div class="shortcuts-modal">
       <div class="shortcuts-header">
-        <h3 class="shortcuts-title"><i class="material-icons">keyboard</i> Atajos de teclado</h3>
+        <h3 class="shortcuts-title" id="shortcutsTitle"><i class="material-icons">keyboard</i> Atajos de teclado</h3>
         <button class="shortcuts-close" id="shortcutsClose"><i class="material-icons">close</i></button>
       </div>
       <div class="shortcuts-body">
@@ -651,7 +657,7 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <!-- Back to top button -->
-  <button class="back-to-top" id="backToTop" onclick="smoothScrollToTop()">
+  <button class="back-to-top" id="backToTop" onclick="smoothScrollToTop()" aria-label="Volver arriba">
     <i class="material-icons">keyboard_arrow_up</i>
   </button>
 

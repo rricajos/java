@@ -621,6 +621,7 @@ function loadTopicCode(topicName, contentEl) {
     })
     .catch(function (error) {
       contentEl.classList.remove('loading');
+      contentEl.setAttribute('role', 'alert');
       contentEl.textContent = 'Error loading code: ' + error.message;
     });
 }
@@ -640,13 +641,28 @@ function renderCode(contentEl, code) {
   copyBtn.className = 'code-toolbar-btn';
   copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
   copyBtn.addEventListener('click', function () {
-    navigator.clipboard.writeText(code).then(function () {
-      copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
-      showToast('check', 'Código copiado al portapapeles');
-      setTimeout(function () {
-        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
-      }, 2000);
-    });
+    var highlightedLines = contentEl.querySelectorAll('.code-line.highlighted');
+    if (highlightedLines.length > 0) {
+      var selectedCode = Array.prototype.slice.call(highlightedLines).map(function (row) {
+        var contentSpan = row.querySelector('.code-line-content');
+        return contentSpan ? contentSpan.textContent : '';
+      }).join('\n');
+      navigator.clipboard.writeText(selectedCode).then(function () {
+        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+        showToast('check', highlightedLines.length + ' líneas copiadas');
+        setTimeout(function () {
+          copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
+        }, 2000);
+      });
+    } else {
+      navigator.clipboard.writeText(code).then(function () {
+        copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">check</i> Copied!';
+        showToast('check', 'Código copiado al portapapeles');
+        setTimeout(function () {
+          copyBtn.innerHTML = '<i class="material-icons" style="font-size:16px">content_copy</i> Copy';
+        }, 2000);
+      });
+    }
   });
 
   // Wrap toggle button
@@ -743,11 +759,25 @@ function renderCode(contentEl, code) {
     }
   });
 
+  // Clear highlights button
+  var clearHighlightBtn = document.createElement('button');
+  clearHighlightBtn.className = 'code-toolbar-btn';
+  clearHighlightBtn.innerHTML = '<i class="material-icons" style="font-size:16px">highlight_off</i> Clear';
+  clearHighlightBtn.title = 'Limpiar líneas resaltadas';
+  clearHighlightBtn.style.display = 'none';
+  clearHighlightBtn.addEventListener('click', function () {
+    contentEl.querySelectorAll('.code-line.highlighted').forEach(function (row) {
+      row.classList.remove('highlighted');
+    });
+    clearHighlightBtn.style.display = 'none';
+  });
+
   toolbar.appendChild(copyBtn);
   toolbar.appendChild(wrapBtn);
   toolbar.appendChild(shareBtn);
   toolbar.appendChild(dlBtn);
   toolbar.appendChild(notesBtn);
+  toolbar.appendChild(clearHighlightBtn);
 
   // Font size zoom controls
   var zoomOutBtn = document.createElement('button');
@@ -823,6 +853,11 @@ function renderCode(contentEl, code) {
     var num = document.createElement('span');
     num.className = 'code-line-num';
     num.textContent = index + 1;
+    num.addEventListener('click', function () {
+      row.classList.toggle('highlighted');
+      var hasHighlights = contentEl.querySelector('.code-line.highlighted');
+      if (clearHighlightBtn) clearHighlightBtn.style.display = hasHighlights ? '' : 'none';
+    });
     row.appendChild(num);
 
     // Line content
@@ -1015,6 +1050,7 @@ function toggleNotesPanel(contentEl, topicName) {
   }
 
   textarea.focus();
+  textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 /**
@@ -2221,6 +2257,57 @@ var DataPortability = (function () {
       }, 300);
     }
   }, 8000);
+})();
+
+// ============================================================
+// BREADCRUMB BAR — shows current section + topic on scroll
+// ============================================================
+
+(function () {
+  var breadcrumbBar = document.getElementById('breadcrumbBar');
+  var breadcrumbSection = document.getElementById('breadcrumbSection');
+  var breadcrumbTopic = document.getElementById('breadcrumbTopic');
+  if (!breadcrumbBar) return;
+
+  var currentVisible = null;
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        currentVisible = entry.target;
+      } else if (entry.target === currentVisible) {
+        currentVisible = null;
+      }
+    });
+    updateBreadcrumb();
+  }, { rootMargin: '-70px 0px -50% 0px', threshold: 0 });
+
+  function updateBreadcrumb() {
+    if (!currentVisible || !currentVisible.classList.contains('open')) {
+      breadcrumbBar.classList.remove('visible');
+      return;
+    }
+    var section = currentVisible.closest('.section');
+    var sectionTitle = section ? section.querySelector('.section-title') : null;
+    var topicTitle = currentVisible.querySelector('.section-topic-title');
+    if (sectionTitle && topicTitle) {
+      breadcrumbSection.textContent = sectionTitle.textContent.trim();
+      breadcrumbTopic.textContent = topicTitle.textContent.trim();
+      breadcrumbBar.classList.add('visible');
+    } else {
+      breadcrumbBar.classList.remove('visible');
+    }
+  }
+
+  // Observe all topics
+  document.querySelectorAll('.section-topic').forEach(function (topic) {
+    observer.observe(topic);
+  });
+
+  // Re-check when topics open/close
+  document.addEventListener('click', function () {
+    setTimeout(updateBreadcrumb, 350);
+  });
 })();
 
 // ============================================================

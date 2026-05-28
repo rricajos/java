@@ -178,6 +178,11 @@
   background: rgba(248, 152, 32, 0.08);
 }
 
+.search-history-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
 /* Shuffle / random topic button */
 .shuffle-btn {
   position: absolute;

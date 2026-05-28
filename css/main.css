@@ -74,6 +74,12 @@
   --search-history-border: #d0d7de;
   --search-history-header-border: #e2e6ea;
   --search-history-item-color: #24292f;
+
+  /* Cubes */
+  --cube-info: #57606a;
+  --cube-info-title: #424a53;
+  --cube-list-item: #656d76;
+  --cube-border: rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] {
@@ -145,6 +151,12 @@
   --search-history-border: #30363d;
   --search-history-header-border: #21262d;
   --search-history-item-color: #e6edf3;
+
+  /* Cubes */
+  --cube-info: #8898a8;
+  --cube-info-title: #b0bec5;
+  --cube-list-item: #7d8590;
+  --cube-border: rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -331,6 +343,11 @@ a:hover {
 
 .quickjump-item:hover {
   background: var(--hover-bg);
+}
+
+.quickjump-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
 }
 
 .quickjump-item .material-icons {

@@ -337,11 +337,21 @@
   color: var(--code-toolbar-btn-text);
 }
 
+.code-line.highlighted {
+  background-color: rgba(248, 152, 32, 0.12);
+}
+
+.code-line.highlighted .code-line-num {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
 .code-line-num {
   flex-shrink: 0;
   width: 3em;
   text-align: right;
   padding-right: 1em;
+  cursor: pointer;
   color: var(--code-line-num);
   user-select: none;
   border-right: 1px solid var(--code-line-border);
@@ -387,7 +397,7 @@
 
 .section-topic-content .code-separator {
   color: var(--syn-separator);
-  border-bottom: 1px solid #21262d;
+  border-bottom: 1px solid var(--syn-separator);
   padding-bottom: 0.3em;
   margin-bottom: 0.3em;
 }
@@ -820,6 +830,31 @@
   outline-offset: 1px;
 }
 
+.filter-pill:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.topic-fav-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.see-also-chip:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.resume-toast-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.footer-reset-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
 /* Toast notifications */
 .toast-container {
   position: fixed;
@@ -1139,9 +1174,68 @@
   text-align: right;
 }
 
+/* Breadcrumb bar */
+.breadcrumb-bar {
+  display: none;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.3em 0;
+  font-size: 0.75em;
+  color: var(--text-secondary);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.breadcrumb-bar.visible {
+  display: flex;
+}
+
+.breadcrumb-section {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.breadcrumb-topic {
+  color: var(--text-color);
+}
+
 /* Print styles */
 @media print {
-  .banner,
+  /* Show banner as page header */
+  .banner {
+    display: block !important;
+    height: auto !important;
+    padding: 1em;
+    background: none !important;
+  }
+
+  .banner-content {
+    display: block;
+    text-align: left;
+  }
+
+  .banner-title {
+    -webkit-text-fill-color: #333;
+    color: #333;
+    font-size: 1.5em;
+  }
+
+  .banner-subtitle {
+    color: #666;
+  }
+
+  .banner-glow,
+  .banner-grid,
+  .banner-badges,
+  .banner-stats,
+  .banner-icon {
+    display: none !important;
+  }
+
+  /* Hide interactive elements */
   .search-box-form-container,
   .back-to-top,
   .theme-toggle,
@@ -1150,7 +1244,17 @@
   .section-topic-arrow,
   .shortcuts-overlay,
   .stats-panel,
-  .stats-toggle-btn {
+  .stats-toggle-btn,
+  .see-also,
+  .notes-panel,
+  .filter-pills,
+  .search-results-count,
+  .quickjump-dropdown,
+  .quickjump-toggle,
+  .toast-container,
+  .scroll-progress,
+  .topic-fav-btn,
+  .breadcrumb-bar {
     display: none !important;
   }
 
@@ -1163,10 +1267,13 @@
     padding: 0;
   }
 
+  /* Expand all topics */
   .section-topic {
     border: 1px solid #ccc;
     break-inside: avoid;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.8em;
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   .section-topic-content {
@@ -1183,11 +1290,22 @@
     max-height: none !important;
   }
 
+  /* No breaks inside code blocks */
+  .code-line {
+    break-inside: avoid;
+  }
+
   .code-line-num {
     color: #999;
     border-right-color: #ddd;
   }
 
+  /* Highlighted lines visible in print */
+  .code-line.highlighted {
+    background: #fff3cd !important;
+  }
+
+  /* Print-safe syntax colors */
   .section-topic-content .code-keyword { color: #a31515; }
   .section-topic-content .code-string { color: #067d17; }
   .section-topic-content .code-comment { color: #808080; }
