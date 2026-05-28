@@ -1,0 +1,16 @@
+{
+  "name": "Super Java Brain",
+  "short_name": "SJB",
+  "description": "Pure Java Handbook — 31 topics, 4 levels",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#f89820",
+  "icons": [
+    {
+      "src": "icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

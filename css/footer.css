@@ -34,16 +34,16 @@
   display: flex;
   align-items: center;
   gap: 0.35em;
-  color: #656d76;
+  color: var(--text-secondary);
   font-size: 0.9em;
 }
 
 .footer-shortcut kbd {
-  background: #21262d;
-  color: #b0bec5;
+  background: var(--kbd-bg);
+  color: var(--kbd-color);
   padding: 0.1em 0.45em;
   border-radius: 4px;
-  border: 1px solid #30363d;
+  border: 1px solid var(--kbd-border);
   font-family: 'SF Mono', monospace;
   font-size: 0.85em;
 }
@@ -66,9 +66,9 @@
 
 .footer-reset-btn {
   background: none;
-  border: 1px solid #30363d;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #656d76;
+  color: var(--text-secondary);
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;

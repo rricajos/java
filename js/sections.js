@@ -4,6 +4,104 @@
 // ============================================================
 
 var codeCache = {};
+var _searchTimer = null;
+
+function debouncedSearch() {
+  if (_searchTimer) clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(function () {
+    search();
+  }, 180);
+}
+
+/**
+ * Search history module
+ */
+var SearchHistory = (function () {
+  var STORAGE_KEY = 'sjb-search-history';
+  var MAX_ITEMS = 8;
+
+  function getHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch (e) { return []; }
+  }
+
+  function addEntry(query) {
+    if (!query || query.length < 2) return;
+    var history = getHistory();
+    var idx = history.indexOf(query);
+    if (idx !== -1) history.splice(idx, 1);
+    history.unshift(query);
+    if (history.length > MAX_ITEMS) history.pop();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  }
+
+  function clearHistory() {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  return { getHistory: getHistory, addEntry: addEntry, clearHistory: clearHistory };
+})();
+
+/**
+ * Topic notes module
+ */
+var TopicNotes = (function () {
+  var STORAGE_KEY = 'sjb-topic-notes';
+
+  function getAll() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch (e) { return {}; }
+  }
+
+  function get(topicName) {
+    return getAll()[topicName] || '';
+  }
+
+  function set(topicName, text) {
+    var notes = getAll();
+    if (text.trim()) {
+      notes[topicName] = text;
+    } else {
+      delete notes[topicName];
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  }
+
+  function count() {
+    return Object.keys(getAll()).length;
+  }
+
+  return { getAll: getAll, get: get, set: set, count: count };
+})();
+
+/**
+ * Resume session module — tracks last opened topic
+ */
+var ResumeSession = (function () {
+  var KEY = 'sjb-last-session';
+
+  function save(topicName) {
+    var data = {
+      topic: topicName,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function get() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY));
+    } catch (e) { return null; }
+  }
+
+  function clear() {
+    localStorage.removeItem(KEY);
+  }
+
+  return { save: save, get: get, clear: clear };
+})();
 
 /**
  * Show a toast notification
@@ -61,6 +159,162 @@ var topicPaths = {
   modules:                'geek/ModulesDemo.java'
 };
 
+// Related topics map — each topic has 2-3 related topics with a short reason
+var topicRelations = {
+  variables_and_types: [
+    { topic: 'operators_arithmetic', reason: 'Operan con estos tipos' },
+    { topic: 'strings', reason: 'String es un tipo clave' },
+    { topic: 'oop_classes', reason: 'Tipos custom con clases' }
+  ],
+  operators_arithmetic: [
+    { topic: 'variables_and_types', reason: 'Tipos sobre los que operan' },
+    { topic: 'operators_assignment', reason: 'Asignación compuesta' },
+    { topic: 'methods', reason: 'Encapsular cálculos' }
+  ],
+  operators_assignment: [
+    { topic: 'operators_arithmetic', reason: 'Operadores aritméticos compuestos' },
+    { topic: 'variables_and_types', reason: 'Asignación a variables tipadas' }
+  ],
+  operators_logical: [
+    { topic: 'control_flow', reason: 'Condiciones en if/while' },
+    { topic: 'operators_conditional', reason: 'Ternario usa booleanos' }
+  ],
+  operators_conditional: [
+    { topic: 'control_flow', reason: 'Switch es flujo de control' },
+    { topic: 'operators_logical', reason: 'Condiciones en ternario' }
+  ],
+  control_flow: [
+    { topic: 'operators_logical', reason: 'Condiciones con operadores lógicos' },
+    { topic: 'operators_conditional', reason: 'Switch y ternario' },
+    { topic: 'lambdas_and_functional', reason: 'Alternativas funcionales a loops' }
+  ],
+  datetime_api: [
+    { topic: 'variables_and_types', reason: 'Tipos temporales' },
+    { topic: 'strings', reason: 'Formateo con DateTimeFormatter' },
+    { topic: 'optional', reason: 'El parsing puede fallar' }
+  ],
+  packages_and_access: [
+    { topic: 'oop_classes', reason: 'Modificadores de acceso en clases' },
+    { topic: 'modules', reason: 'Modules extienden packages' },
+    { topic: 'oop_inheritance', reason: 'Acceso protected en herencia' }
+  ],
+  methods: [
+    { topic: 'oop_classes', reason: 'Los métodos viven en clases' },
+    { topic: 'lambdas_and_functional', reason: 'Lambdas como method references' },
+    { topic: 'exceptions', reason: 'Los métodos lanzan excepciones' }
+  ],
+  strings: [
+    { topic: 'regex', reason: 'Pattern matching sobre strings' },
+    { topic: 'arrays', reason: 'String a char array' },
+    { topic: 'streams', reason: 'Stream processing de strings' }
+  ],
+  arrays: [
+    { topic: 'collections', reason: 'Collections extienden arrays' },
+    { topic: 'streams', reason: 'Stream desde arrays' },
+    { topic: 'generics', reason: 'Arrays type-safe con generics' }
+  ],
+  optional: [
+    { topic: 'streams', reason: 'findFirst devuelve Optional' },
+    { topic: 'lambdas_and_functional', reason: 'map/flatMap son funcionales' },
+    { topic: 'exceptions', reason: 'Evitar NullPointerException' }
+  ],
+  inner_classes: [
+    { topic: 'oop_classes', reason: 'Anidadas dentro de clases' },
+    { topic: 'lambdas_and_functional', reason: 'Lambdas reemplazan clases anónimas' },
+    { topic: 'design_patterns', reason: 'Builder usa inner classes' }
+  ],
+  regex: [
+    { topic: 'strings', reason: 'Regex opera sobre strings' },
+    { topic: 'streams', reason: 'Pattern.splitAsStream' },
+    { topic: 'methods', reason: 'Validación con regex' }
+  ],
+  oop_classes: [
+    { topic: 'oop_inheritance', reason: 'Herencia extiende clases' },
+    { topic: 'inner_classes', reason: 'Clases dentro de clases' },
+    { topic: 'design_patterns', reason: 'Patrones basados en OOP' }
+  ],
+  oop_inheritance: [
+    { topic: 'oop_classes', reason: 'Fundamento: clases' },
+    { topic: 'generics', reason: 'Bounded types usan herencia' },
+    { topic: 'annotations', reason: '@Override' }
+  ],
+  exceptions: [
+    { topic: 'file_io', reason: 'Operaciones IO lanzan excepciones' },
+    { topic: 'jdbc', reason: 'JDBC usa checked exceptions' },
+    { topic: 'optional', reason: 'Optional evita null exceptions' }
+  ],
+  collections: [
+    { topic: 'generics', reason: 'Collections son genéricas' },
+    { topic: 'streams', reason: 'Stream desde collections' },
+    { topic: 'lambdas_and_functional', reason: 'forEach, removeIf usan lambdas' }
+  ],
+  annotations: [
+    { topic: 'reflection', reason: 'Leer annotations en runtime' },
+    { topic: 'junit', reason: '@Test annotation' },
+    { topic: 'oop_inheritance', reason: '@Override' }
+  ],
+  jdbc: [
+    { topic: 'exceptions', reason: 'Manejo de SQLException' },
+    { topic: 'collections', reason: 'Mapear result sets' },
+    { topic: 'optional', reason: 'Valores nullable de BD' }
+  ],
+  junit: [
+    { topic: 'annotations', reason: '@Test annotations' },
+    { topic: 'exceptions', reason: 'assertThrows' },
+    { topic: 'reflection', reason: 'Test runner usa reflection' }
+  ],
+  design_patterns: [
+    { topic: 'oop_classes', reason: 'Fundamento OOP' },
+    { topic: 'oop_inheritance', reason: 'Polimorfismo en patrones' },
+    { topic: 'inner_classes', reason: 'Builder usa inner classes' }
+  ],
+  build_tools: [
+    { topic: 'modules', reason: 'Builds de módulos' },
+    { topic: 'junit', reason: 'Integración de test lifecycle' },
+    { topic: 'jdbc', reason: 'Gestión de dependencias' }
+  ],
+  generics: [
+    { topic: 'collections', reason: 'Collections son genéricas' },
+    { topic: 'lambdas_and_functional', reason: 'Interfaces funcionales genéricas' },
+    { topic: 'streams', reason: 'Streams usan generics' }
+  ],
+  lambdas_and_functional: [
+    { topic: 'streams', reason: 'Streams consumen lambdas' },
+    { topic: 'methods', reason: 'Method references' },
+    { topic: 'concurrency', reason: 'CompletableFuture usa lambdas' }
+  ],
+  streams: [
+    { topic: 'lambdas_and_functional', reason: 'Streams requieren lambdas' },
+    { topic: 'collections', reason: 'Stream desde/hacia collections' },
+    { topic: 'optional', reason: 'Operaciones devuelven Optional' }
+  ],
+  concurrency: [
+    { topic: 'lambdas_and_functional', reason: 'Runnables como lambdas' },
+    { topic: 'streams', reason: 'Parallel streams' },
+    { topic: 'collections', reason: 'Concurrent collections' }
+  ],
+  file_io: [
+    { topic: 'exceptions', reason: 'Manejo de IOException' },
+    { topic: 'streams', reason: 'Files.lines() devuelve Stream' },
+    { topic: 'networking', reason: 'I/O para comunicación de red' }
+  ],
+  networking: [
+    { topic: 'file_io', reason: 'Conceptos de I/O compartidos' },
+    { topic: 'concurrency', reason: 'HTTP requests async' },
+    { topic: 'exceptions', reason: 'Manejo de errores de red' }
+  ],
+  reflection: [
+    { topic: 'annotations', reason: 'Leer annotations via reflection' },
+    { topic: 'oop_classes', reason: 'Inspeccionar estructura de clases' },
+    { topic: 'modules', reason: 'Control de acceso de módulos' }
+  ],
+  modules: [
+    { topic: 'packages_and_access', reason: 'Modules extienden packages' },
+    { topic: 'reflection', reason: 'opens para acceso reflectivo' },
+    { topic: 'build_tools', reason: 'Build tools gestionan módulos' }
+  ]
+};
+
 /**
  * Scroll smoothly to a section by ID
  */
@@ -99,6 +353,9 @@ function toggleTopic(headerEl) {
 
     // Update URL hash for deep linking
     history.replaceState(null, '', '#' + topicEl.dataset.topic);
+
+    // Save session for resume
+    ResumeSession.save(topicEl.dataset.topic);
 
     // Scroll topic into view after a short delay for animation
     setTimeout(function () {
@@ -383,10 +640,24 @@ function renderCode(contentEl, code) {
     }
   });
 
+  // Notes button
+  var notesBtn = document.createElement('button');
+  notesBtn.className = 'code-toolbar-btn';
+  var existingNote = TopicNotes.get(currentTopic ? currentTopic.dataset.topic : '');
+  notesBtn.innerHTML = '<i class="material-icons" style="font-size:16px">'
+    + (existingNote ? 'edit_note' : 'note_add') + '</i> Notes'
+    + (existingNote ? '<span class="notes-indicator"></span>' : '');
+  notesBtn.addEventListener('click', function () {
+    if (currentTopic) {
+      toggleNotesPanel(contentEl, currentTopic.dataset.topic);
+    }
+  });
+
   toolbar.appendChild(copyBtn);
   toolbar.appendChild(wrapBtn);
   toolbar.appendChild(shareBtn);
   toolbar.appendChild(dlBtn);
+  toolbar.appendChild(notesBtn);
 
   var navSpacer = document.createElement('span');
   navSpacer.className = 'code-toolbar-spacer';
@@ -491,6 +762,112 @@ function renderCode(contentEl, code) {
       descEl.appendChild(timeBadge);
     }
   }
+
+  // Related topics — "See also" section
+  if (topicEl) {
+    var currentTopicName = topicEl.dataset.topic;
+    var relations = topicRelations[currentTopicName];
+    if (relations && relations.length > 0) {
+      var seeAlso = document.createElement('div');
+      seeAlso.className = 'see-also';
+      seeAlso.innerHTML = '<div class="see-also-header">'
+        + '<i class="material-icons">link</i> See also</div>';
+
+      var seeAlsoList = document.createElement('div');
+      seeAlsoList.className = 'see-also-list';
+
+      relations.forEach(function (rel) {
+        var relTopicEl = document.querySelector('.section-topic[data-topic="' + rel.topic + '"]');
+        if (!relTopicEl) return;
+
+        var relTitle = relTopicEl.querySelector('.section-topic-title');
+        var relIcon = relTopicEl.querySelector('.section-topic-icon');
+        var titleTexts = [];
+        relTitle.childNodes.forEach(function (n) {
+          if (n.nodeType === 3 && n.textContent.trim()) titleTexts.push(n.textContent.trim());
+        });
+        var displayName = titleTexts.join(' ') || rel.topic;
+        var iconName = relIcon ? relIcon.textContent : 'code';
+
+        var chip = document.createElement('button');
+        chip.className = 'see-also-chip';
+        chip.title = rel.reason;
+        chip.innerHTML = '<i class="material-icons">' + iconName + '</i>'
+          + '<span class="see-also-chip-name">' + displayName + '</span>'
+          + '<span class="see-also-chip-reason">' + rel.reason + '</span>';
+
+        chip.addEventListener('click', function () {
+          var currentHeader = topicEl.querySelector('.section-topic-header');
+          if (currentHeader) toggleTopic(currentHeader);
+          var relHeader = relTopicEl.querySelector('.section-topic-header');
+          if (relHeader) toggleTopic(relHeader);
+        });
+
+        seeAlsoList.appendChild(chip);
+      });
+
+      seeAlso.appendChild(seeAlsoList);
+      contentEl.appendChild(seeAlso);
+    }
+  }
+}
+
+/**
+ * Toggle personal notes panel for a topic
+ */
+function toggleNotesPanel(contentEl, topicName) {
+  var existing = contentEl.querySelector('.notes-panel');
+  if (existing) {
+    existing.parentNode.removeChild(existing);
+    return;
+  }
+
+  var panel = document.createElement('div');
+  panel.className = 'notes-panel';
+  panel.innerHTML = '<div class="notes-panel-header">'
+    + '<i class="material-icons">edit_note</i> Notas personales</div>';
+
+  var textarea = document.createElement('textarea');
+  textarea.className = 'notes-textarea';
+  textarea.placeholder = 'Escribe tus notas sobre este topic...';
+  textarea.value = TopicNotes.get(topicName);
+  textarea.rows = 4;
+
+  var saveTimer = null;
+  textarea.addEventListener('input', function () {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      TopicNotes.set(topicName, textarea.value);
+      // Update notes badge on topic card
+      var topicEl = contentEl.closest('.section-topic');
+      if (topicEl) {
+        var badge = topicEl.querySelector('.topic-notes-badge');
+        if (textarea.value.trim() && !badge) {
+          var titleEl = topicEl.querySelector('.section-topic-title');
+          var nb = document.createElement('i');
+          nb.className = 'material-icons topic-notes-badge';
+          nb.textContent = 'edit_note';
+          nb.title = 'Tiene notas';
+          titleEl.appendChild(nb);
+        } else if (!textarea.value.trim() && badge) {
+          badge.parentNode.removeChild(badge);
+        }
+      }
+      showToast('save', 'Nota guardada');
+    }, 800);
+  });
+
+  panel.appendChild(textarea);
+
+  // Insert before .see-also if it exists, else at the end
+  var seeAlso = contentEl.querySelector('.see-also');
+  if (seeAlso) {
+    contentEl.insertBefore(panel, seeAlso);
+  } else {
+    contentEl.appendChild(panel);
+  }
+
+  textarea.focus();
 }
 
 /**
@@ -620,6 +997,57 @@ function findCommentIndex(line) {
 // SEARCH FILTER
 // ============================================================
 
+/**
+ * Highlight matching text in an element, preserving child nodes (icons, badges)
+ */
+function highlightMatch(element, query) {
+  // Find all text nodes to work with
+  if (!element) return;
+  if (!element.dataset.originalHtml) {
+    element.dataset.originalHtml = element.innerHTML;
+  }
+
+  if (!query) {
+    element.innerHTML = element.dataset.originalHtml;
+    return;
+  }
+
+  // Restore original first to avoid stacking highlights
+  element.innerHTML = element.dataset.originalHtml;
+
+  var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var regex = new RegExp('(' + escaped + ')', 'gi');
+
+  // Walk text nodes only
+  var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+  var textNodes = [];
+  var node;
+  while (node = walker.nextNode()) {
+    if (regex.test(node.textContent)) {
+      textNodes.push(node);
+    }
+    regex.lastIndex = 0;
+  }
+
+  textNodes.forEach(function (tn) {
+    var parts = tn.textContent.split(regex);
+    if (parts.length <= 1) return;
+    var frag = document.createDocumentFragment();
+    parts.forEach(function (part) {
+      if (regex.test(part)) {
+        var mark = document.createElement('mark');
+        mark.className = 'search-highlight';
+        mark.textContent = part;
+        frag.appendChild(mark);
+      } else {
+        frag.appendChild(document.createTextNode(part));
+      }
+      regex.lastIndex = 0;
+    });
+    tn.parentNode.replaceChild(frag, tn);
+  });
+}
+
 function search() {
   smoothScrollToTop();
   var query = document.getElementById("query").value;
@@ -635,6 +1063,11 @@ function search() {
   }
 
   filterTopics(query);
+
+  // Save to search history
+  if (query.trim().length >= 2) {
+    SearchHistory.addEntry(query.trim());
+  }
 }
 
 function clearSearch() {
@@ -659,8 +1092,10 @@ function filterTopics(query) {
 
     topics.forEach(function (topic) {
       totalTopics++;
-      var title = topic.querySelector('.section-topic-title').textContent.toLowerCase();
-      var desc = topic.querySelector('.section-topic-desc').textContent.toLowerCase();
+      var titleEl = topic.querySelector('.section-topic-title');
+      var descEl = topic.querySelector('.section-topic-desc');
+      var title = titleEl.textContent.toLowerCase();
+      var desc = descEl.textContent.toLowerCase();
       var topicName = topic.dataset.topic.toLowerCase().replace(/_/g, ' ');
 
       var matchesText = !normalizedQuery ||
@@ -673,10 +1108,14 @@ function filterTopics(query) {
 
       if (matchesText && matchesFav && matchesCat) {
         topic.classList.remove('filtered-out');
+        highlightMatch(titleEl, normalizedQuery);
+        highlightMatch(descEl, normalizedQuery);
         visibleTopics++;
         totalVisible++;
       } else {
         topic.classList.add('filtered-out');
+        highlightMatch(titleEl, '');
+        highlightMatch(descEl, '');
       }
     });
 
@@ -1261,6 +1700,153 @@ document.addEventListener('keydown', function (event) {
 })();
 
 // ============================================================
+// SEARCH HISTORY DROPDOWN
+// ============================================================
+
+(function () {
+  var input = document.getElementById('query');
+  var dropdown = document.getElementById('searchHistoryDropdown');
+  if (!input || !dropdown) return;
+
+  function showHistory() {
+    var history = SearchHistory.getHistory();
+    if (history.length === 0 || input.value.trim()) {
+      dropdown.classList.remove('visible');
+      return;
+    }
+    dropdown.innerHTML = '<div class="search-history-header">'
+      + '<span>Búsquedas recientes</span>'
+      + '<button class="search-history-clear" id="clearHistoryBtn" title="Borrar historial">'
+      + '<i class="material-icons" style="font-size:14px">delete_outline</i></button></div>';
+
+    history.forEach(function (term) {
+      var item = document.createElement('button');
+      item.className = 'search-history-item';
+      item.innerHTML = '<i class="material-icons" style="font-size:16px">history</i> ' + escapeHtml(term);
+      item.addEventListener('click', function () {
+        input.value = term;
+        dropdown.classList.remove('visible');
+        search();
+      });
+      dropdown.appendChild(item);
+    });
+
+    dropdown.querySelector('#clearHistoryBtn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      SearchHistory.clearHistory();
+      dropdown.classList.remove('visible');
+      showToast('delete_outline', 'Historial de búsqueda eliminado');
+    });
+
+    dropdown.classList.add('visible');
+  }
+
+  input.addEventListener('focus', showHistory);
+  input.addEventListener('input', function () {
+    if (input.value.trim()) {
+      dropdown.classList.remove('visible');
+    } else {
+      showHistory();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('visible');
+    }
+  });
+})();
+
+// ============================================================
+// TOPIC NOTES BADGES — show badge on topics that have notes
+// ============================================================
+
+(function () {
+  var notes = TopicNotes.getAll();
+  Object.keys(notes).forEach(function (topicName) {
+    var topicEl = document.querySelector('.section-topic[data-topic="' + topicName + '"]');
+    if (!topicEl || topicEl.querySelector('.topic-notes-badge')) return;
+    var titleEl = topicEl.querySelector('.section-topic-title');
+    var badge = document.createElement('i');
+    badge.className = 'material-icons topic-notes-badge';
+    badge.textContent = 'edit_note';
+    badge.title = 'Tiene notas';
+    titleEl.appendChild(badge);
+  });
+})();
+
+// ============================================================
+// EXPORT / IMPORT PROGRESS DATA
+// ============================================================
+
+var DataPortability = (function () {
+  function exportData() {
+    var data = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      readTopics: getReadTopics(),
+      favorites: getFavorites(),
+      notes: TopicNotes.getAll(),
+      searchHistory: SearchHistory.getHistory(),
+      theme: localStorage.getItem('sjb-theme')
+    };
+
+    var json = JSON.stringify(data, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'sjb-progress-' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('download', 'Progreso exportado correctamente');
+  }
+
+  function importData() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.addEventListener('change', function () {
+      var file = input.files[0];
+      if (!file) return;
+
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var data = JSON.parse(e.target.result);
+          if (!data.version) throw new Error('Formato inválido');
+
+          var existing = getReadTopics().length + getFavorites().length + TopicNotes.count();
+          if (existing > 0 && !confirm('Tienes datos existentes. ¿Reemplazar con los importados?')) return;
+
+          if (data.readTopics) localStorage.setItem('sjb-read-topics', JSON.stringify(data.readTopics));
+          if (data.favorites) localStorage.setItem('sjb-favorites', JSON.stringify(data.favorites));
+          if (data.notes) localStorage.setItem('sjb-topic-notes', JSON.stringify(data.notes));
+          if (data.searchHistory) localStorage.setItem('sjb-search-history', JSON.stringify(data.searchHistory));
+          if (data.theme) localStorage.setItem('sjb-theme', data.theme);
+
+          showToast('upload', 'Progreso importado — recargando...');
+          setTimeout(function () { location.reload(); }, 1200);
+        } catch (err) {
+          showToast('error', 'Error al importar: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+    input.click();
+  }
+
+  return { exportData: exportData, importData: importData };
+})();
+
+(function () {
+  var exportBtn = document.getElementById('exportBtn');
+  var importBtn = document.getElementById('importBtn');
+  if (exportBtn) exportBtn.addEventListener('click', DataPortability.exportData);
+  if (importBtn) importBtn.addEventListener('click', DataPortability.importData);
+})();
+
+// ============================================================
 // DEEP LINKING — open topic from URL hash on page load
 // ============================================================
 
@@ -1286,3 +1872,85 @@ document.addEventListener('keydown', function (event) {
     topicEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 150);
 })();
+
+// ============================================================
+// RESUME SESSION — offer to continue where user left off
+// ============================================================
+
+(function () {
+  // Don't show resume prompt if there's already a deep link hash
+  if (window.location.hash) return;
+
+  var session = ResumeSession.get();
+  if (!session || !session.topic) return;
+
+  // Only show if less than 7 days old
+  if (Date.now() - session.timestamp > 7 * 24 * 60 * 60 * 1000) return;
+
+  var topicEl = document.querySelector('.section-topic[data-topic="' + session.topic + '"]');
+  if (!topicEl) return;
+
+  var titleEl = topicEl.querySelector('.section-topic-title');
+  var titleTexts = [];
+  titleEl.childNodes.forEach(function (n) {
+    if (n.nodeType === 3 && n.textContent.trim()) titleTexts.push(n.textContent.trim());
+  });
+  var displayName = titleTexts.join(' ') || session.topic;
+
+  var container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  var toast = document.createElement('div');
+  toast.className = 'toast resume-toast';
+  toast.innerHTML = '<i class="material-icons">history</i>'
+    + '<span>Continuar con <strong>' + displayName + '</strong>?</span>'
+    + '<button class="resume-toast-btn resume-yes">'
+    + '<i class="material-icons" style="font-size:14px">arrow_forward</i> Sí</button>'
+    + '<button class="resume-toast-btn resume-no">'
+    + '<i class="material-icons" style="font-size:14px">close</i></button>';
+  container.appendChild(toast);
+
+  toast.querySelector('.resume-yes').addEventListener('click', function () {
+    if (toast.parentNode) toast.parentNode.removeChild(toast);
+    var header = topicEl.querySelector('.section-topic-header');
+    if (header) toggleTopic(header);
+  });
+
+  toast.querySelector('.resume-no').addEventListener('click', function () {
+    if (toast.parentNode) toast.parentNode.removeChild(toast);
+    ResumeSession.clear();
+  });
+
+  // Auto-dismiss after 8 seconds
+  setTimeout(function () {
+    if (toast.parentNode) {
+      toast.classList.add('fading');
+      setTimeout(function () {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 300);
+    }
+  }, 8000);
+})();
+
+// ============================================================
+// ONLINE / OFFLINE INDICATOR
+// ============================================================
+
+(function () {
+  window.addEventListener('online', function () {
+    showToast('wifi', 'Conexión restaurada');
+  });
+  window.addEventListener('offline', function () {
+    showToast('wifi_off', 'Sin conexión — modo offline');
+  });
+})();
+
+// ============================================================
+// SERVICE WORKER REGISTRATION
+// ============================================================
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  });
+}

@@ -1,12 +1,11 @@
 .search-box-form-container {
-  background-color: var(--black-color);
   padding: 1rem 1rem 0.5rem;
   position: sticky;
   top: 0;
   z-index: 150;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(26, 26, 46, 0.92);
+  background-color: var(--nav-bg);
 }
 
 .search-box-form {
@@ -23,16 +22,16 @@
   padding: 0 3em 0 1rem;
   font-size: 1em;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--nav-input-border);
   width: 100%;
   height: 42px;
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #e6edf3;
+  background-color: var(--nav-input-bg);
+  color: var(--nav-input-text);
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-box-form-input::placeholder {
-  color: #656d76;
+  color: var(--nav-placeholder);
 }
 
 .search-box-form-input:focus {
@@ -63,7 +62,7 @@
 }
 
 .search-box-form-submit-icon {
-  color: #656d76;
+  color: var(--nav-icon);
   font-size: 20px;
   transition: color 0.15s ease;
 }
@@ -75,7 +74,7 @@
   transform: translateY(-50%) scale(0.7);
   background: none;
   border: none;
-  color: #656d76;
+  color: var(--nav-icon);
   cursor: pointer;
   padding: 0.2em;
   display: flex;
@@ -108,6 +107,75 @@
 
 .search-box-form-container.compact {
   padding: 0.5rem 1rem;
+}
+
+/* Search history dropdown */
+.search-history-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--search-history-bg);
+  border: 1px solid var(--search-history-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 160;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+}
+
+.search-history-dropdown.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.search-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4em 0.8em;
+  font-size: 0.75em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--search-history-header-border);
+}
+
+.search-history-clear {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.1em;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.search-history-clear:hover {
+  color: #f85149;
+}
+
+.search-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+  padding: 0.5em 0.8em;
+  background: none;
+  border: none;
+  color: var(--search-history-item-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.search-history-item:hover {
+  background: rgba(248, 152, 32, 0.08);
 }
 
 @media screen and (max-width: 600px) {

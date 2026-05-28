@@ -30,6 +30,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
   <link rel="canonical" href="https://rricajos.github.io/java/" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <script src="js/banner.js" defer></script>
   <script src="js/sections.js" defer></script>
@@ -90,13 +94,14 @@
 
     <form class="search-box-form">
       <input class="search-box-form-input" type="text" id="query" name="query" placeholder="Buscar topics..."
-        autocomplete="off" oninput="search()" aria-label="Buscar topics">
+        autocomplete="off" oninput="debouncedSearch()" aria-label="Buscar topics">
       <button type="button" class="search-box-clear-btn" id="searchClearBtn" onclick="clearSearch()" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
         <i class="material-icons">close</i>
       </button>
       <div class="search-box-form-submit" onclick="search()">
         <i class="search-box-form-submit-icon material-icons">search</i>
       </div>
+      <div class="search-history-dropdown" id="searchHistoryDropdown"></div>
     </form>
     <div class="search-results-count" id="searchResultsCount" aria-live="polite" role="status"></div>
     <div class="filter-pills" id="filterPills">
@@ -597,8 +602,14 @@
       <div class="footer-links">
         <a href="https://github.com/rricajos/java" target="_blank">GitHub</a>
         <a href="https://docs.oracle.com/en/java/" target="_blank">Oracle Docs</a>
+        <button class="footer-reset-btn" id="exportBtn" title="Exportar progreso">
+          <i class="material-icons" style="font-size:14px">download</i> Export
+        </button>
+        <button class="footer-reset-btn" id="importBtn" title="Importar progreso">
+          <i class="material-icons" style="font-size:14px">upload</i> Import
+        </button>
         <button class="footer-reset-btn" id="resetProgressBtn" title="Reiniciar progreso de lectura">
-          <i class="material-icons" style="font-size:14px">restart_alt</i> Reset progress
+          <i class="material-icons" style="font-size:14px">restart_alt</i> Reset
         </button>
       </div>
     </div>
